@@ -1,4 +1,4 @@
-package com.github.superxlcr.minimetalslug.model;
+package com.github.superxlcr.minimetalslug.model.Bullet;
 
 import android.graphics.Bitmap;
 
@@ -23,11 +23,11 @@ public abstract class Bullet {
     public abstract Bitmap getBitmap();
 
     /**
-     * 获取子弹x方向速度
+     * 获取子弹x方向速度绝对值
      *
-     * @return x方向速度
+     * @return x方向速度绝对值
      */
-    public abstract int getSpeedX();
+    public abstract int getAbsSpeedX();
 
     /**
      * 获取子弹y方向速度
@@ -40,7 +40,8 @@ public abstract class Bullet {
      * 控制子弹移动
      */
     public final void move() {
-        x += getSpeedX();
+        // TODO dir
+        x += getAbsSpeedX();
         y += getSpeedY();
     }
 }

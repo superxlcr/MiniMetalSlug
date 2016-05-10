@@ -1,4 +1,4 @@
-package com.github.superxlcr.minimetalslug.model;
+package com.github.superxlcr.minimetalslug.model.Monster;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -28,13 +28,14 @@ public abstract class Monster {
     protected int drawDieIndex = 0;
     // 绘制速度记录
     protected int drawCount = 0;
-    // 射击速度记录
-    protected int shootCount = 0;
+    //
 
     /**
      * 绘制怪物
+     *
+     * @param canvas 画布
      */
-    public abstract void draw();
+    public abstract void draw(Canvas canvas);
 
     /**
      * 返回动画刷新速度，越小越快
@@ -44,12 +45,19 @@ public abstract class Monster {
     protected abstract int getDrawSpeed();
 
     /**
-     * 返回怪物射击速度，越小越快
+     * 返回怪物射击帧号
      *
-     * @return 射击速度
+     * @return 射击帧
      */
-    protected abstract int getShootSpeed();
+    protected abstract int getShootIndex();
 
+    /**
+     * 绘制怪物动画
+     *
+     * @param canvas     画布
+     * @param bitmaps    普通动画帧组
+     * @param dieBitmaps 死亡动画帧组
+     */
     protected void drawAni(Canvas canvas, Bitmap bitmaps[],
             Bitmap dieBitmaps[]) {
         if (canvas == null)
@@ -86,13 +94,31 @@ public abstract class Monster {
             endY = drawY + bitmap.getHeight();
         }
         // 判读是否射击
-        shootCount++;
-        if (shootCount >= getShootSpeed()) {
+        if (!isDie && drawIndex == getShootIndex()) {
             //TODO addBullet();
         }
         //TODO drawBullet();
     }
 
+    /**
+     * 判断是否怪物子弹被击中
+     *
+     * @param x 子弹x
+     * @param y 子弹y
+     * @return 是否被击中
+     */
+    public boolean isHit(int x, int y) {
+        return x >= startX && x <= endX && y >= startY && y <= endY;
+    }
 
+    /**
+     * 移动怪物
+     *
+     * @param shift x左移大小，可为负值
+     */
+    public void updateShift(int shift) {
+        x -= shift;
+        // TODO bullet shift
+    }
 
 }

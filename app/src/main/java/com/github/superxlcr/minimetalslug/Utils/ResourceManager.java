@@ -3,7 +3,6 @@ package com.github.superxlcr.minimetalslug.Utils;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 

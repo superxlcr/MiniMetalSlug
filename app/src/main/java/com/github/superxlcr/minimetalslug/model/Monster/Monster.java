@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 import com.github.superxlcr.minimetalslug.Utils.Graphics;
+import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
+import com.github.superxlcr.minimetalslug.Utils.Utils;
+import com.github.superxlcr.minimetalslug.model.Player;
 
 /**
  * 怪物的抽象基类
@@ -11,24 +14,50 @@ import com.github.superxlcr.minimetalslug.Utils.Graphics;
  */
 public abstract class Monster {
     // 怪物的坐标
-    protected int x = 0;
-    protected int y = 0;
+    private int x = 0;
+    private int y = 0;
     // 是否死亡
-    protected boolean isDie = false;
+    private boolean isDie = false;
     // 绘制怪物相关的坐标
     // 左上角x,y
-    protected int startX = 0;
-    protected int startY = 0;
+    private int startX = 0;
+    private int startY = 0;
     // 右下角x,y
-    protected int endX = 0;
-    protected int endY = 0;
+    private int endX = 0;
+    private int endY = 0;
     // 目前绘制帧数
-    protected int drawIndex = 0;
+    private int drawIndex = 0;
     // 死亡绘制动画帧数
-    protected int drawDieIndex = 0;
+    private int drawDieIndex = 0;
     // 绘制速度记录
-    protected int drawCount = 0;
-    //
+    private int drawCount = 0;
+    // 死亡动画播放完毕
+    private boolean dieFinish = false;
+
+    public Monster() {
+        x = initX();
+        y = initY();
+    }
+
+    /**
+     * 返回初始化时默认x
+     *
+     * @return x
+     */
+    protected int initX() {
+        return ResourceManager.SCREEN_WIDTH + Utils
+                .rand(ResourceManager.SCREEN_WIDTH >> 1) - Utils
+                .rand(ResourceManager.SCREEN_WIDTH >> 2);
+    }
+
+    /**
+     * 返回初始化时默认y
+     *
+     * @return y
+     */
+    protected int initY() {
+        return Player.Y_DEFAULT;
+    }
 
     /**
      * 绘制怪物
@@ -66,7 +95,7 @@ public abstract class Monster {
         // 判读是否绘制下一帧
         drawCount++;
         if (drawCount >= getDrawSpeed()) {
-            if (isDie) // 已死亡
+            if (isDie && !dieFinish) // 已死亡
                 drawDieIndex++;
             else // 未死亡
                 drawIndex = drawIndex + 1 >= bitmaps.length ? 0 : drawIndex + 1;
@@ -74,8 +103,10 @@ public abstract class Monster {
         }
         // 获取绘制图片
         if (isDie) { // 已死亡
-            if (dieBitmaps != null && drawDieIndex <= dieBitmaps.length)
+            if (dieBitmaps != null && drawDieIndex < dieBitmaps.length)
                 bitmap = dieBitmaps[drawDieIndex];
+            if (drawDieIndex >= dieBitmaps.length)
+                dieFinish = true;
         } else { // 未死亡
             if (bitmaps != null)
                 bitmap = bitmaps[drawIndex];
@@ -97,7 +128,6 @@ public abstract class Monster {
         if (!isDie && drawIndex == getShootIndex()) {
             //TODO addBullet();
         }
-        //TODO drawBullet();
     }
 
     /**
@@ -117,8 +147,32 @@ public abstract class Monster {
      * @param shift x左移大小，可为负值
      */
     public void updateShift(int shift) {
-        x -= shift;
-        // TODO bullet shift
     }
 
+    /**
+     * 获取怪物x坐标
+     *
+     * @return x坐标
+     */
+    public int getX() {
+        return x;
+    }
+
+    /**
+     * 设置怪物是否死亡
+     *
+     * @param isDie 是否死亡
+     */
+    public void setIsDie(boolean isDie) {
+        this.isDie = isDie;
+    }
+
+    /**
+     * 判断怪物死亡动画是否播放完毕
+     *
+     * @return 是否播放完毕
+     */
+    public boolean isDieFinish() {
+        return isDie & dieFinish;
+    }
 }

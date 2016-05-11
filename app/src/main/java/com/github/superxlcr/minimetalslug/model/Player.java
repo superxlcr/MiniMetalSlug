@@ -1,9 +1,13 @@
 package com.github.superxlcr.minimetalslug.model;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.view.ViewManager;
 
 import com.github.superxlcr.minimetalslug.MainActivity;
 import com.github.superxlcr.minimetalslug.R;
+import com.github.superxlcr.minimetalslug.Utils.Graphics;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
 
@@ -44,7 +48,7 @@ public class Player {
     public static final int DIR_RIGHT = 1;
     public static final int DIR_LEFT = -1;
 
-    // 角色坐标
+    // 角色初始坐标
     public static int X_DEFAULT = 0;
     public static int Y_DEFAULT = 0;
     public static int Y_JUMP_MAX = 0;
@@ -79,11 +83,83 @@ public class Player {
     public boolean isJump = false;
     // 角色是否跳到最高点
     public boolean isJumpMax = false;
-    // TODO
+    // 最高处滞留时间
+    public int jumpStopCount = 0;
 
-    public Player() {
+    // 腿部绘制帧数计数
+    private int legIndex = 0;
+    // 头部绘制帧数计数
+    private int headIndex = 0;
+    // 头部图片x
+    private int currentHeadDrawX = 0;
+    // 头部图片y
+    private int currentHeadDrawY = 0;
+    // 当前绘制腿部动画帧
+    private Bitmap currentLegBitmap = null;
+    // 当前绘制头部动画帧
+    private Bitmap currentHeadBitmap = null;
+    // 动画刷新速度
+    private int drawCount = 0;
+
+    public Player(String name, int maxHp) {
         // 初始化图片组
         intitalBitmapArrays();
+        // 设置姓名与血量
+        this.name = name;
+        this.hp = maxHp;
+    }
+
+    /**
+     * 获取当前角色的方向
+     *
+     * @return 方向
+     */
+    public int getDir() {
+        if (action % 2 == 0) // 偶数为左
+            return DIR_LEFT;
+        return DIR_RIGHT; // 奇数为右
+    }
+
+    /**
+     * 获取角色当前偏移
+     *
+     * @return 偏移
+     */
+    public int getShift() {
+        if (x <= 0 || y <= 0)
+            initPosition();
+        return X_DEFAULT - x;
+    }
+
+    /**
+     * 绘制左上角的头像、姓名、血量等信息
+     *
+     * @param canvas
+     */
+    public void drawHead(Canvas canvas) {
+        if (canvas == null || head == null || head.isRecycled())
+            return;
+        // 头像
+        Graphics.drawMatrixImage(canvas, head, 0, 0, head.getWidth(),
+                                 head.getHeight(), Graphics.Trans.TRANS_MIRROR,
+                                 0, 0, 0, Graphics.DEFAULT_TIMES_SCALE);
+        // 名字
+        Paint paint = new Paint();
+        paint.setTextSize(30);
+        Graphics.drawBorderString(canvas, 0xa33e11, 0xffde00, name,
+                                  head.getWidth(),
+                                  (int) ResourceManager.scale * 20, 3, paint);
+        // 血量
+        Graphics.drawBorderString(canvas, 0x066a14, 0x91ff1d, "HP: " + hp,
+                                  head.getWidth(),
+                                  (int) ResourceManager.scale * 40, 3, paint);
+    }
+
+    /**
+     * 初始化角色位置
+     */
+    private void initPosition() {
+        // TODO
     }
 
     /**

@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import com.github.superxlcr.minimetalslug.MainActivity;
 import com.github.superxlcr.minimetalslug.R;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
+import com.github.superxlcr.minimetalslug.Utils.Utils;
 
 /**
  * 飞机怪物
@@ -85,6 +86,13 @@ public class Plane extends Monster {
                                       R.mipmap.fly_die_10,
                                       ResourceManager.scale);
         }
+    }
+
+    // 飞机高度不一样
+    @Override
+    protected int initY() {
+        return ResourceManager.SCREEN_HEIGHT * 50 / 100 - Utils
+                .rand((int) ResourceManager.scale * 100);
     }
 
     @Override

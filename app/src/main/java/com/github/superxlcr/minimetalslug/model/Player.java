@@ -109,6 +109,14 @@ public class Player {
         this.hp = maxHp;
     }
 
+    public int getHp() {
+        return hp;
+    }
+
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
     /**
      * 获取当前角色的方向
      *

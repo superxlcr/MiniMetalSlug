@@ -309,4 +309,13 @@ public class Player {
                                       ResourceManager.scale);
     }
 
+    /**
+     * 判断角色是否死亡
+     *
+     * @return 是否死亡
+     */
+    public boolean isDie() {
+        return hp <= 0;
+    }
+
 }

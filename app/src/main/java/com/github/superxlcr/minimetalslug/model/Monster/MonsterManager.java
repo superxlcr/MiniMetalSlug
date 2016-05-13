@@ -27,6 +27,7 @@ public class MonsterManager {
      * @return 是否生成成功
      */
     public static boolean generateMonster() {
+        //TODO 个数
         Class myClass = monsterClass[Utils.rand(monsterClass.length)];
         try {
             Object object = myClass.newInstance();

@@ -20,7 +20,7 @@ public class BulletManager {
     public static List<Bullet> playerBulletList = new ArrayList<>();
 
     /**
-     * 更新子弹位置
+     * 通过shift更新子弹位置
      *
      * @param shift x左移大小，可为负值
      */
@@ -37,6 +37,30 @@ public class BulletManager {
         delList.clear();
         for (Bullet bullet : playerBulletList) {
             bullet.updateShift(shift);
+            if (bullet.getX() < 0 || bullet
+                    .getX() > ResourceManager.SCREEN_WIDTH ||
+                    bullet.getY() < 0)
+                delList.add(bullet);
+        }
+        playerBulletList.removeAll(delList);
+    }
+
+    /**
+     * 更新子弹位置
+     */
+    public static void movePosition() {
+        List<Bullet> delList = new ArrayList<>();
+        for (Bullet bullet : monsterBulletList) {
+            bullet.move();
+            if (bullet.getX() < 0 || bullet
+                    .getX() > ResourceManager.SCREEN_WIDTH ||
+                    bullet.getY() < 0)
+                delList.add(bullet);
+        }
+        monsterBulletList.removeAll(delList);
+        delList.clear();
+        for (Bullet bullet : playerBulletList) {
+            bullet.move();
             if (bullet.getX() < 0 || bullet
                     .getX() > ResourceManager.SCREEN_WIDTH ||
                     bullet.getY() < 0)

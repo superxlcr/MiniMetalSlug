@@ -45,9 +45,11 @@ public abstract class Monster {
      * @return x
      */
     protected int initX() {
-        return ResourceManager.SCREEN_WIDTH + Utils
-                .rand(ResourceManager.SCREEN_WIDTH >> 1) - Utils
-                .rand(ResourceManager.SCREEN_WIDTH >> 2);
+        // TODO -50
+        return 400;
+//        return ResourceManager.SCREEN_WIDTH + Utils
+//                .rand(ResourceManager.SCREEN_WIDTH >> 1) - Utils
+//                .rand(ResourceManager.SCREEN_WIDTH >> 2);
     }
 
     /**
@@ -56,7 +58,9 @@ public abstract class Monster {
      * @return y
      */
     protected int initY() {
-        return Player.Y_DEFAULT;
+        // TODO
+        return 800;
+        //return Player.Y_DEFAULT;
     }
 
     /**

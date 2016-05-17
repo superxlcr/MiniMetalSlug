@@ -10,14 +10,11 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
-import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
 import com.github.superxlcr.minimetalslug.model.Bullet.BulletManager;
-import com.github.superxlcr.minimetalslug.model.Monster.Monster;
 import com.github.superxlcr.minimetalslug.model.Monster.MonsterManager;
 import com.github.superxlcr.minimetalslug.model.Player;
 
@@ -26,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * 游戏界面
  * Created by superxlcr on 2016/5/11.
  */
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
@@ -122,7 +120,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public GameView(Context context) {
         super(context);
         this.mainContext = context;
-        // TODO
+        // 初始化场景状态
+        gameStage = STAGE_INIT;
+        // 初始化画笔
+        paint = new Paint();
+        // 设置抗锯齿
+        paint.setAntiAlias(true);
+        // 设置该组件会保持屏幕常量，避免游戏过程中出现黑屏。
+        setKeepScreenOn(true);
+        // 设置焦点，相应事件处理
+        setFocusable(true);
+        // 获取SurfaceHolder并添加回调函数
+        surfaceHolder = getHolder();
+        surfaceHolder.addCallback(this);
     }
 
     // 两次调度间隔
@@ -431,6 +441,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 break;
             case PAINT: // 绘制游戏界面
                 // TODO ResourceManager
+                canvas.drawBitmap(ResourceManager.map, 0, 0, paint);
+                MonsterManager.drawMonster(canvas);
                 break;
         }
         return STAGE_NO_CHANGE;

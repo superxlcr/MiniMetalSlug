@@ -31,6 +31,9 @@ public class ResourceManager {
      * 加载资源
      */
     public static void loadResource() {
+        // 大小初始化
+        SCREEN_WIDTH = MainActivity.windowWidth;
+        SCREEN_HEIGHT = MainActivity.windowHeight;
         // 音效相关初始化
         soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         // TODO soundMap

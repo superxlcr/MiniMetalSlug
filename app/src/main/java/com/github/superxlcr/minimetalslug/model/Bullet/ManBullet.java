@@ -14,7 +14,8 @@ public class ManBullet extends Bullet {
 
     public static Bitmap bitmap = null;
 
-    public ManBullet() {
+    public ManBullet(int x, int y, int dir) {
+        super(x, y, dir);
         if (bitmap == null)
             bitmap = ResourceManager
                     .createBitmapByID(MainActivity.resources, R.mipmap.bullet_2,

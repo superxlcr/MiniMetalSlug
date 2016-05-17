@@ -27,6 +27,9 @@ public class MonsterManager {
      * @return 是否生成成功
      */
     public static boolean generateMonster() {
+        // TODO
+        if (monsterList.size() > 20)
+            return false;
         //TODO 个数
         Class myClass = monsterClass[Utils.rand(monsterClass.length)];
         try {

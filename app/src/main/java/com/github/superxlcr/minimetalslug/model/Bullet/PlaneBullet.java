@@ -14,7 +14,8 @@ public class PlaneBullet extends Bullet {
 
     public static Bitmap bitmap = null;
 
-    public PlaneBullet() {
+    public PlaneBullet(int x, int y, int dir) {
+        super(x, y, dir);
         if (bitmap == null)
             bitmap = ResourceManager
                     .createBitmapByID(MainActivity.resources, R.mipmap.bullet_3,

@@ -16,6 +16,9 @@ import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
  * Created by superxlcr on 2016/5/11.
  */
 public class Player {
+    // 目前只有一个玩家
+    public static Player player = null;
+
     // 玩家角色图片组
     // 站立，腿部
     public static Bitmap legStandImage[] = null;

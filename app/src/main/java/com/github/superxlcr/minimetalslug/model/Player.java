@@ -10,6 +10,7 @@ import com.github.superxlcr.minimetalslug.R;
 import com.github.superxlcr.minimetalslug.Utils.Graphics;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
+import com.github.superxlcr.minimetalslug.model.Bullet.MyBullet;
 
 /**
  * 玩家类
@@ -61,7 +62,7 @@ public class Player {
     // 角色生命值
     private int hp;
     // 角色发射的子弹类型
-    private Bullet gun;
+    private Class<? extends Bullet> gun;
     // 角色当前动作
     private int action = ACTION_STAND_RIGHT;
     // 角色坐标
@@ -73,7 +74,7 @@ public class Player {
     public static final int MOVE_STAND = 0;
     public static final int MOVE_RIGHT = 1;
     public static final int MOVE_LEFT = 2;
-    // 角色移动方式
+    // 角色移动状态
     public int move = MOVE_STAND;
 
     // 角色射击相关
@@ -110,14 +111,12 @@ public class Player {
         // 设置姓名与血量
         this.name = name;
         this.hp = maxHp;
+        // 目前只有一种枪
+        this.gun = MyBullet.class;
     }
 
-    public int getHp() {
-        return hp;
-    }
-
-    public void setHp(int hp) {
-        this.hp = hp;
+    public void setMove(int move) {
+        this.move = move;
     }
 
     /**
@@ -167,10 +166,14 @@ public class Player {
     }
 
     /**
-     * 初始化角色位置
+     * 初始化角色位置，能跳跃的最大高度
      */
     private void initPosition() {
-        // TODO
+        x = ResourceManager.SCREEN_WIDTH * 15 / 100;
+        y = ResourceManager.SCREEN_HEIGHT * 75 / 100;
+        X_DEFAULT = x;
+        Y_DEFAULT = y;
+        Y_JUMP_MAX = ResourceManager.SCREEN_HEIGHT * 50 / 100;
     }
 
     /**
@@ -319,6 +322,14 @@ public class Player {
      */
     public boolean isDie() {
         return hp <= 0;
+    }
+
+    public int getHp() {
+        return hp;
+    }
+
+    public void setHp(int hp) {
+        this.hp = hp;
     }
 
 }

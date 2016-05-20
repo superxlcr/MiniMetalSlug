@@ -48,10 +48,10 @@ public class StageGame extends Stage {
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN: // 按下
-                            // TODO left
+                            Player.player.setMove(Player.MOVE_LEFT);
                             break;
                         case MotionEvent.ACTION_UP: // 松开
-                            // TODO stand
+                            Player.player.setMove(Player.MOVE_STAND);
                             break;
                         default:
                             break;
@@ -77,10 +77,10 @@ public class StageGame extends Stage {
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN: // 按下
-                            // TODO right
+                            Player.player.setMove(Player.MOVE_RIGHT);
                             break;
                         case MotionEvent.ACTION_UP: // 松开
-                            // TODO stand
+                            Player.player.setMove(Player.MOVE_STAND);
                             break;
                         default:
                             break;

@@ -3,11 +3,15 @@ package com.github.superxlcr.minimetalslug.Utils;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.media.AudioManager;
 import android.media.SoundPool;
 
+import com.github.superxlcr.minimetalslug.GameView;
 import com.github.superxlcr.minimetalslug.MainActivity;
 import com.github.superxlcr.minimetalslug.R;
+import com.github.superxlcr.minimetalslug.model.Monster.Plane;
+import com.github.superxlcr.minimetalslug.model.Player;
 
 import java.util.HashMap;
 
@@ -79,4 +83,30 @@ public class ResourceManager {
         return bitmap;
     }
 
+    /**
+     * 绘制地图
+     *
+     * @param canvas 画布
+     */
+    public static void drawMap(Canvas canvas) {
+        if (canvas == null)
+            return;
+        if (map != null && !map.isRecycled()) {
+            int width = map.getWidth() + Player.player.getShift();
+            // 绘制地图
+            Graphics.drawImage(canvas, map, 0, 0, -Player.player.getShift(), 0,
+                               width, map.getHeight());
+            int totalWidth = width;
+            // 拼接地图,绘制剩下的长度
+            while (totalWidth < SCREEN_WIDTH) {
+                int mapWidth = map.getWidth();
+                int drawWidth = SCREEN_WIDTH - totalWidth;
+                if (mapWidth < drawWidth)
+                    drawWidth = mapWidth;
+                Graphics.drawImage(canvas, map, totalWidth, 0, 0, 0, drawWidth,
+                                   map.getHeight());
+                totalWidth += drawWidth;
+            }
+        }
+    }
 }

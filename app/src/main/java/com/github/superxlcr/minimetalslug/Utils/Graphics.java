@@ -2,6 +2,7 @@ package com.github.superxlcr.minimetalslug.Utils;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -110,8 +111,8 @@ public final class Graphics {
             Path path = new Path();
             path.moveTo(pts[0], pts[1]);
             path.lineTo(pts[2], pts[3]);
-            path.moveTo(pts[4], pts[5]);
-            path.moveTo(pts[6], pts[7]);
+            path.lineTo(pts[4], pts[5]);
+            path.lineTo(pts[6], pts[7]);
             path.close();
             canvas.clipPath(path);
             // 使用matrix绘制位图
@@ -242,11 +243,15 @@ public final class Graphics {
         // 绘制字符串包边
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(borderWidth);
-        paint.setColor(borderColor);
+        paint.setColor(Color.rgb((borderColor & 0xff0000) >> 16,
+                                 (borderColor & 0x00ff00) >> 8,
+                                 (borderColor & 0x0000ff)));
         canvas.drawText(text, x, y, paint);
         // 绘制字符串
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(textColor);
+        paint.setColor(Color.rgb((textColor & 0xff0000) >> 16,
+                                 (textColor & 0x00ff00) >> 8,
+                                 (textColor & 0x0000ff)));
         canvas.drawText(text, x, y, paint);
     }
 

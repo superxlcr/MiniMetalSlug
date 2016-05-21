@@ -98,6 +98,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         // TODO
         // 初始化场景状态
         gameStage = new StageInit();
+        gameStage.doInit();
         // 初始化画笔
         paint = new Paint();
         // 设置抗锯齿

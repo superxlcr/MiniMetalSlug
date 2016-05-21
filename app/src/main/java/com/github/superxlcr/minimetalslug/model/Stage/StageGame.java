@@ -138,12 +138,12 @@ public class StageGame extends Stage {
     public void doLogic() {
         // 随机生成怪物
         MonsterManager.generateMonster();
+        // 角色逻辑
+        Player.player.logic();
         // 移动子弹
         BulletManager.movePosition();
         // 检查子弹命中
         BulletManager.checkHit();
-        // 角色逻辑
-        // TODO player logic
         // 处理角色死亡
         if (Player.player.isDie()) // 下一个场景为失败场景
             stageList.add(new StageLose());
@@ -160,8 +160,12 @@ public class StageGame extends Stage {
 
     @Override
     public void doPaint(Canvas canvas, Paint paint) {
-        // TODO ResourceManager
-        canvas.drawBitmap(ResourceManager.map, 0, 0, paint);
-        MonsterManager.drawMonster(canvas);
+        // 绘制地图
+        ResourceManager.drawMap(canvas);
+        // 绘制怪物
+//        MonsterManager.drawMonster(canvas);
+        // TODO 绘制子弹
+        // 绘制角色
+        Player.player.draw(canvas);
     }
 }

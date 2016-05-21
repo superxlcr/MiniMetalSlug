@@ -11,6 +11,7 @@ import com.github.superxlcr.minimetalslug.Utils.Graphics;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
 import com.github.superxlcr.minimetalslug.model.Bullet.MyBullet;
+import com.github.superxlcr.minimetalslug.model.Monster.MonsterManager;
 
 /**
  * 玩家类
@@ -42,8 +43,8 @@ public class Player {
     public static final int MAX_HP = 500;
     // 角色控制动作
     public static final int ACTION_STAND_RIGHT = 1;
-    public static final int ACTION_STAND_Left = 2;
-    public static final int ACTION_RUN＿RIGHT = 3;
+    public static final int ACTION_STAND_LEFT = 2;
+    public static final int ACTION_RUN_RIGHT = 3;
     public static final int ACTION_RUN_LEFT = 4;
     public static final int ACTION_JUMP_RIGHT = 5;
     public static final int ACTION_JUMP_LEFT = 6;
@@ -102,7 +103,7 @@ public class Player {
     private Bitmap currentLegBitmap = null;
     // 当前绘制头部动画帧
     private Bitmap currentHeadBitmap = null;
-    // 动画刷新速度
+    // 动画刷新计数器
     private int drawCount = 0;
 
     public Player(String name, int maxHp) {
@@ -115,6 +116,47 @@ public class Player {
         this.gun = MyBullet.class;
     }
 
+    /**
+     * 处理角色移动和跳跃逻辑
+     */
+    public void logic() {
+        move();
+    }
+
+    /**
+     * 绘制角色
+     * @param canvas 画布
+     */
+    public void draw(Canvas canvas)
+    {
+        if (canvas == null)
+            return;
+
+        switch (action)
+        {
+            case ACTION_STAND_RIGHT:
+                drawAni(canvas, legStandImage, headStandImage, DIR_RIGHT);
+                break;
+            case ACTION_STAND_LEFT:
+                drawAni(canvas, legStandImage, headStandImage, DIR_LEFT);
+                break;
+            case ACTION_RUN_RIGHT:
+                drawAni(canvas, legRunImage, headRunImage, DIR_RIGHT);
+                break;
+            case ACTION_RUN_LEFT:
+                drawAni(canvas, legRunImage, headRunImage, DIR_LEFT);
+                break;
+            case ACTION_JUMP_RIGHT:
+                drawAni(canvas, legJumpImage, headJumpImage, DIR_RIGHT);
+                break;
+            case ACTION_JUMP_LEFT:
+                drawAni(canvas, legJumpImage, headJumpImage, DIR_LEFT);
+                break;
+            default:
+                break;
+        }
+    }
+    
     public void setMove(int move) {
         this.move = move;
     }
@@ -146,7 +188,7 @@ public class Player {
      *
      * @param canvas
      */
-    public void drawHead(Canvas canvas) {
+    private void drawHead(Canvas canvas) {
         if (canvas == null || head == null || head.isRecycled())
             return;
         // 头像
@@ -158,11 +200,122 @@ public class Player {
         paint.setTextSize(30);
         Graphics.drawBorderString(canvas, 0xa33e11, 0xffde00, name,
                                   head.getWidth(),
-                                  (int) ResourceManager.scale * 20, 3, paint);
+                                  (int) ResourceManager.scale * 50, 3, paint);
         // 血量
         Graphics.drawBorderString(canvas, 0x066a14, 0x91ff1d, "HP: " + hp,
                                   head.getWidth(),
-                                  (int) ResourceManager.scale * 40, 3, paint);
+                                  (int) ResourceManager.scale * 100, 3, paint);
+    }
+
+    // 角色移动
+    private void move() {
+        int dis = 0;
+        if (move == MOVE_RIGHT) {
+            // 向右移动
+            dis = (int) (6 * ResourceManager.scale);
+            // 更新怪物位置
+            MonsterManager.updatePosition(dis);
+            // 更新角色位置
+            setX(getX() + dis);
+            // 设置动作
+            if (!isJump())
+                setAction(ACTION_RUN_RIGHT);
+        } else if (move == MOVE_LEFT) {
+            dis = (int) -(6 * ResourceManager.scale);
+            // 更新怪物位置
+            MonsterManager.updatePosition(dis);
+            // 更新角色位置
+            setX(getX() + dis);
+            if (getX() + dis < Player.X_DEFAULT)
+                dis = Player.X_DEFAULT - getX();
+            if (!isJump())
+                setAction(ACTION_RUN_LEFT);
+        } else if (!isJump()) // 不动的时候，初始化动作
+            setAction(getDir() == DIR_LEFT ? ACTION_STAND_LEFT :
+                              ACTION_STAND_RIGHT);
+
+        // TODO 设置状态
+    }
+
+    // 绘制角色的动画帧
+    private void drawAni(Canvas canvas, Bitmap[] legArr, Bitmap[] headArr,
+            int dir) {
+        if (canvas == null)
+            return;
+        if (legArr == null || headArr == null)
+            return;
+        // TODO 射击状态图片处理
+
+        legIndex = legIndex % legArr.length;
+        headIndex = headIndex % headArr.length;
+
+        // 是否需要翻转图片
+        Graphics.Trans trans = dir == DIR_RIGHT ? Graphics.Trans.TRANS_MIRROR :
+                Graphics.Trans.TRANS_NONE;
+
+        // 绘制脚部
+        Bitmap bitmap = legArr[legIndex];
+        if (bitmap == null || bitmap.isRecycled())
+            return;
+
+        int drawX = X_DEFAULT;
+        int drawY = y - bitmap.getHeight();
+        Graphics.drawMatrixImage(canvas, bitmap, 0, 0, bitmap.getWidth(),
+                                 bitmap.getHeight(), trans, drawX, drawY, 0,
+                                 Graphics.DEFAULT_TIMES_SCALE);
+        currentLegBitmap = bitmap;
+
+        // 绘制头部
+        Bitmap bitmap2 = headArr[headIndex];
+        if (bitmap2 == null || bitmap2.isRecycled())
+            return;
+        // 微调图片
+        switch (action)
+        {
+            case ACTION_STAND_RIGHT:
+                drawX -= (int) (10 * ResourceManager.scale);
+                drawY = drawY - bitmap2
+                        .getHeight() + (int) (25 * ResourceManager.scale);
+                break;
+            case ACTION_STAND_LEFT:
+                drawX -= (int) (35 * ResourceManager.scale);
+                drawY = drawY - bitmap2
+                        .getHeight() + (int) (25 * ResourceManager.scale);
+                break;
+            case ACTION_RUN_RIGHT:
+                drawX += (int) (5 * ResourceManager.scale);
+                drawY = drawY - bitmap2
+                        .getHeight() + (int) (30 * ResourceManager.scale);
+                break;
+            case ACTION_RUN_LEFT:
+                // TODO
+                drawX -= (int) (20 * ResourceManager.scale);
+                drawY = drawY - bitmap2
+                        .getHeight() + (int) (30 * ResourceManager.scale);
+                break;
+            case ACTION_JUMP_RIGHT:
+                // TODO
+                break;
+            case ACTION_JUMP_LEFT:
+                // TODO
+                break;
+        }
+        Graphics.drawMatrixImage(canvas, bitmap2, 0, 0, bitmap2.getWidth(),
+                                 bitmap2.getHeight(), trans, drawX, drawY, 0,
+                                 Graphics.DEFAULT_TIMES_SCALE);
+        currentHeadDrawX = drawX;
+        currentHeadDrawY = drawY;
+        currentHeadBitmap = bitmap2;
+
+        // drawCount控制该方法每调用4次才会切换到下一帧位图
+        drawCount++;
+        if (drawCount >= 4) {
+            drawCount = 0;
+            legIndex++;
+            headIndex++;
+        }
+        // 画左上角的角色、名字、血量
+        drawHead(canvas);
     }
 
     /**
@@ -181,15 +334,15 @@ public class Player {
      */
     private void intitalBitmapArrays() {
         if (legStandImage == null) {
-            legStandImage = new Bitmap[2];
+            legStandImage = new Bitmap[1];
             legStandImage[0] = ResourceManager
                     .createBitmapByID(MainActivity.resources,
                                       R.mipmap.leg_stand,
                                       ResourceManager.scale);
-            legStandImage[1] = ResourceManager
-                    .createBitmapByID(MainActivity.resources,
-                                      R.mipmap.leg_stand_2,
-                                      ResourceManager.scale);
+//            legStandImage[1] = ResourceManager
+//                    .createBitmapByID(MainActivity.resources,
+//                                      R.mipmap.leg_stand_2,
+//                                      ResourceManager.scale);
         }
         if (headStandImage == null) {
             headStandImage = new Bitmap[3];
@@ -332,4 +485,27 @@ public class Player {
         this.hp = hp;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getAction() {
+        return action;
+    }
+
+    public void setAction(int action) {
+        this.action = action;
+    }
+
+    public boolean isJump() {
+        return isJump;
+    }
+
+    public void setIsJump(boolean isJump) {
+        this.isJump = isJump;
+    }
 }

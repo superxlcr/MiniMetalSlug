@@ -94,8 +94,9 @@ public class ResourceManager {
         if (map != null && !map.isRecycled()) {
             int width = map.getWidth() + Player.player.getShift();
             // 绘制地图
-            Graphics.drawImage(canvas, map, 0, 0, -Player.player.getShift(), 0,
-                               width, map.getHeight());
+            // TODO 地图截取
+            Graphics.drawImage(canvas, map, 0, 0, width,
+                               map.getHeight(), 0, 0);
             int totalWidth = width;
             // 拼接地图,绘制剩下的长度
             while (totalWidth < SCREEN_WIDTH) {

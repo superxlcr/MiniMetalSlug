@@ -33,10 +33,14 @@ public abstract class Monster {
     private int drawCount = 0;
     // 死亡动画播放完毕
     private boolean dieFinish = false;
+    // 已完成的位移
+    private int alreadyShift = 0;
 
     public Monster() {
         x = initX();
         y = initY();
+        // 获取角色位移
+        alreadyShift = Player.player.getShift();
     }
 
     /**
@@ -45,11 +49,9 @@ public abstract class Monster {
      * @return x
      */
     protected int initX() {
-        // TODO -50
-        return 400;
-//        return ResourceManager.SCREEN_WIDTH + Utils
-//                .rand(ResourceManager.SCREEN_WIDTH >> 1) - Utils
-//                .rand(ResourceManager.SCREEN_WIDTH >> 2);
+        return ResourceManager.SCREEN_WIDTH + Utils
+                .rand(ResourceManager.SCREEN_WIDTH >> 1) - Utils
+                .rand(ResourceManager.SCREEN_WIDTH >> 2);
     }
 
     /**
@@ -58,9 +60,7 @@ public abstract class Monster {
      * @return y
      */
     protected int initY() {
-        // TODO
-        return 800;
-        //return Player.Y_DEFAULT;
+        return Player.Y_DEFAULT;
     }
 
     /**
@@ -151,6 +151,8 @@ public abstract class Monster {
      * @param shift x左移大小，可为负值
      */
     public void updateShift(int shift) {
+        x -= (shift - alreadyShift);
+        alreadyShift = shift;
     }
 
     /**

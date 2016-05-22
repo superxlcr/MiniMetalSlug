@@ -136,12 +136,15 @@ public class StageGame extends Stage {
 
     @Override
     public void doLogic() {
-        // 随机生成怪物
-        MonsterManager.generateMonster();
         // 角色逻辑
         Player.player.logic();
+        // 随机生成怪物
+        MonsterManager.generateMonster();
+        // 处理角色引起的怪物位移
+        MonsterManager.updatePosition(Player.player.getShift());
         // 移动子弹
         BulletManager.movePosition();
+        // TODO 处理角色引起的子弹位移
         // 检查子弹命中
         BulletManager.checkHit();
         // 处理角色死亡
@@ -163,7 +166,7 @@ public class StageGame extends Stage {
         // 绘制地图
         ResourceManager.drawMap(canvas);
         // 绘制怪物
-//        MonsterManager.drawMonster(canvas);
+        MonsterManager.drawMonster(canvas);
         // TODO 绘制子弹
         // 绘制角色
         Player.player.draw(canvas);

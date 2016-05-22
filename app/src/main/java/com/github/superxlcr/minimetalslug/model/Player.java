@@ -120,20 +120,20 @@ public class Player {
      * 处理角色移动和跳跃逻辑
      */
     public void logic() {
+        // 角色移动
         move();
     }
 
     /**
      * 绘制角色
+     *
      * @param canvas 画布
      */
-    public void draw(Canvas canvas)
-    {
+    public void draw(Canvas canvas) {
         if (canvas == null)
             return;
 
-        switch (action)
-        {
+        switch (action) {
             case ACTION_STAND_RIGHT:
                 drawAni(canvas, legStandImage, headStandImage, DIR_RIGHT);
                 break;
@@ -156,7 +156,7 @@ public class Player {
                 break;
         }
     }
-    
+
     public void setMove(int move) {
         this.move = move;
     }
@@ -175,12 +175,16 @@ public class Player {
     /**
      * 获取角色当前偏移
      *
-     * @return 偏移
+     * @return 偏移，正为向右，负为向左
      */
     public int getShift() {
         if (x <= 0 || y <= 0)
             initPosition();
-        return X_DEFAULT - x;
+        int shift = x - X_DEFAULT;
+        // 不能往左走
+        if (shift < 0)
+            shift = 0;
+        return shift;
     }
 
     /**
@@ -205,6 +209,11 @@ public class Player {
         Graphics.drawBorderString(canvas, 0x066a14, 0x91ff1d, "HP: " + hp,
                                   head.getWidth(),
                                   (int) ResourceManager.scale * 100, 3, paint);
+        // TODO 测试怪物数
+        Graphics.drawBorderString(canvas, 0xa33e11, 0xffde00,
+                                  "怪物数: " + MonsterManager.monsterList.size(),
+                                  head.getWidth(),
+                                  (int) ResourceManager.scale * 150, 3, paint);
     }
 
     // 角色移动
@@ -258,7 +267,7 @@ public class Player {
         if (bitmap == null || bitmap.isRecycled())
             return;
 
-        int drawX = X_DEFAULT;
+        int drawX = X_DEFAULT - bitmap.getWidth() / 2;
         int drawY = y - bitmap.getHeight();
         Graphics.drawMatrixImage(canvas, bitmap, 0, 0, bitmap.getWidth(),
                                  bitmap.getHeight(), trans, drawX, drawY, 0,
@@ -270,26 +279,27 @@ public class Player {
         if (bitmap2 == null || bitmap2.isRecycled())
             return;
         // 微调图片
-        switch (action)
-        {
+        // 取中点
+        drawX = X_DEFAULT - bitmap2.getWidth() / 2;
+        switch (action) {
             case ACTION_STAND_RIGHT:
-                drawX -= (int) (10 * ResourceManager.scale);
+                drawX += (int) (10 * ResourceManager.scale);
                 drawY = drawY - bitmap2
                         .getHeight() + (int) (25 * ResourceManager.scale);
                 break;
             case ACTION_STAND_LEFT:
-                drawX -= (int) (35 * ResourceManager.scale);
+                drawX -= (int) (15 * ResourceManager.scale);
                 drawY = drawY - bitmap2
                         .getHeight() + (int) (25 * ResourceManager.scale);
                 break;
             case ACTION_RUN_RIGHT:
-                drawX += (int) (5 * ResourceManager.scale);
+                drawX += (int) (18 * ResourceManager.scale);
                 drawY = drawY - bitmap2
                         .getHeight() + (int) (30 * ResourceManager.scale);
                 break;
             case ACTION_RUN_LEFT:
                 // TODO
-                drawX -= (int) (20 * ResourceManager.scale);
+                drawX -= (int) (17 * ResourceManager.scale);
                 drawY = drawY - bitmap2
                         .getHeight() + (int) (30 * ResourceManager.scale);
                 break;
@@ -339,10 +349,10 @@ public class Player {
                     .createBitmapByID(MainActivity.resources,
                                       R.mipmap.leg_stand,
                                       ResourceManager.scale);
-//            legStandImage[1] = ResourceManager
-//                    .createBitmapByID(MainActivity.resources,
-//                                      R.mipmap.leg_stand_2,
-//                                      ResourceManager.scale);
+            //            legStandImage[1] = ResourceManager
+            //                    .createBitmapByID(MainActivity.resources,
+            //                                      R.mipmap.leg_stand_2,
+            //                                      ResourceManager.scale);
         }
         if (headStandImage == null) {
             headStandImage = new Bitmap[3];

@@ -16,6 +16,8 @@ public abstract class Bullet {
     private int dir = Player.DIR_LEFT;
     // 子弹是否有效
     private boolean isEffect = true;
+    // 已完成的位移
+    private int alreadyShift = 0;
 
     public Bullet(int x, int y, int dir) {
         this.x = x;
@@ -58,7 +60,8 @@ public abstract class Bullet {
      * @param shift x左移大小，可为负值
      */
     public void updateShift(int shift) {
-        x -= shift;
+        x -= (shift - alreadyShift);
+        alreadyShift = shift;
     }
 
     public int getX() {

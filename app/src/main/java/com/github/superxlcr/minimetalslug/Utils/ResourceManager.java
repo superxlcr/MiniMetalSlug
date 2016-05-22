@@ -89,24 +89,20 @@ public class ResourceManager {
      * @param canvas 画布
      */
     public static void drawMap(Canvas canvas) {
-        if (canvas == null)
-            return;
         if (map != null && !map.isRecycled()) {
-            int width = map.getWidth() + Player.player.getShift();
+            int shift = Player.player.getShift();
+            int mapWidth = map.getWidth();
+            int srcX = shift % mapWidth;
+            int drawX = 0;
             // 绘制地图
-            // TODO 地图截取
-            Graphics.drawImage(canvas, map, 0, 0, width,
-                               map.getHeight(), 0, 0);
-            int totalWidth = width;
-            // 拼接地图,绘制剩下的长度
-            while (totalWidth < SCREEN_WIDTH) {
-                int mapWidth = map.getWidth();
-                int drawWidth = SCREEN_WIDTH - totalWidth;
-                if (mapWidth < drawWidth)
-                    drawWidth = mapWidth;
-                Graphics.drawImage(canvas, map, totalWidth, 0, 0, 0, drawWidth,
-                                   map.getHeight());
-                totalWidth += drawWidth;
+            while (drawX < SCREEN_WIDTH) {
+                // 实际需要绘制宽度
+                int drawWidth = Math.min(mapWidth - srcX, SCREEN_WIDTH - drawX);
+                Graphics.drawImage(canvas, map, srcX, 0, drawWidth,
+                                   map.getHeight(), drawX, 0);
+                // 下次绘图不需要截取
+                srcX = 0;
+                drawX += drawWidth;
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.github.superxlcr.minimetalslug.model.Monster;
 
 import android.graphics.Canvas;
+import android.util.Log;
 
 import com.github.superxlcr.minimetalslug.Utils.Utils;
 import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
@@ -13,6 +14,8 @@ import java.util.List;
  * Created by superxlcr on 2016/5/11.
  */
 public class MonsterManager {
+
+    private static final String TAG = "MonsterManager";
 
     // 已死亡的怪物，正在播放死亡动画
     public static final List<Monster> dieMonsterList = new ArrayList<>();
@@ -42,6 +45,7 @@ public class MonsterManager {
             return false;
         } catch (Exception e) {
             e.printStackTrace();
+            Log.d(TAG, e.toString());
             return false;
         }
     }
@@ -59,7 +63,7 @@ public class MonsterManager {
                 continue;
             // 更新位置
             monster.updateShift(shift);
-            // 删除越界的怪物
+            // 删除左边越界的怪物
             if (monster.getX() < 0)
                 delList.add(monster);
         }

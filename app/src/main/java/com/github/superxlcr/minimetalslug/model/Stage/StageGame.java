@@ -125,7 +125,7 @@ public class StageGame extends Stage {
             jumpButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO jump
+                    Player.player.jump();
                 }
             });
             // 设置view

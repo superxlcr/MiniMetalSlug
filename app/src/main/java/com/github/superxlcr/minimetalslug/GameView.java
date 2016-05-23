@@ -30,8 +30,6 @@ import java.util.List;
  * Created by superxlcr on 2016/5/11.
  */
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-    // 当前上下文
-    private Context mainContext = null;
     // 画布和画笔
     private Paint paint = null;
     private Canvas canvas = null;

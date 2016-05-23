@@ -56,7 +56,10 @@ public class Player {
     // 角色初始坐标
     public static int X_DEFAULT = 0;
     public static int Y_DEFAULT = 0;
+    // 最大跳跃高度
     public static int Y_JUMP_MAX = 0;
+    // 最高处滞留时间
+    public static int JUMP_MAX_STOP = 4;
 
     // 角色名称
     private String name;
@@ -88,7 +91,7 @@ public class Player {
     public boolean isJump = false;
     // 角色是否跳到最高点
     public boolean isJumpMax = false;
-    // 最高处滞留时间
+    // 最高处滞留计数器
     public int jumpStopCount = 0;
 
     // 腿部绘制帧数计数
@@ -103,6 +106,8 @@ public class Player {
     private Bitmap currentLegBitmap = null;
     // 当前绘制头部动画帧
     private Bitmap currentHeadBitmap = null;
+    // 动画刷新时间
+    private static int DRAW_COUNT_TIME = 4;
     // 动画刷新计数器
     private int drawCount = 0;
 
@@ -117,11 +122,43 @@ public class Player {
     }
 
     /**
+     * 执行跳跃方法
+     */
+    public void jump() {
+        // 不处于跳跃状态
+        if (!isJump)
+            isJump = true;
+    }
+
+    /**
      * 处理角色移动和跳跃逻辑
      */
     public void logic() {
         // 角色移动
         move();
+        // 处理角色高度变化
+        if (isJump) {
+            if (!isJumpMax) { // 未跳到最高点,上升
+                y = y - (int) (8 * ResourceManager.scale);
+                // TODO 子弹加速度
+                if (y <= Y_JUMP_MAX) { // 跳跃至最大高度
+                    y = Y_JUMP_MAX;
+                    isJumpMax = true;
+                    jumpStopCount = JUMP_MAX_STOP;
+                }
+            } else { // 已跳到最高点，下降
+                jumpStopCount--; // 最高点冷却
+                if (jumpStopCount <= 0) {
+                    y = y + (int) (8 * ResourceManager.scale);
+                    // TODO 子弹加速度2
+                    if (y >= Y_DEFAULT) { // 降落至地
+                        y = Y_DEFAULT;
+                        isJumpMax = false;
+                        isJump = false;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -225,25 +262,30 @@ public class Player {
             // 更新怪物位置
             MonsterManager.updatePosition(dis);
             // 更新角色位置
-            setX(getX() + dis);
+            x += dis;
             // 设置动作
-            if (!isJump())
-                setAction(ACTION_RUN_RIGHT);
+            if (!isJump)
+                action = ACTION_RUN_RIGHT;
+            else
+                action = ACTION_JUMP_RIGHT;
         } else if (move == MOVE_LEFT) {
             dis = (int) -(6 * ResourceManager.scale);
             // 更新怪物位置
             MonsterManager.updatePosition(dis);
             // 更新角色位置
-            setX(getX() + dis);
-            if (getX() + dis < Player.X_DEFAULT)
-                dis = Player.X_DEFAULT - getX();
-            if (!isJump())
-                setAction(ACTION_RUN_LEFT);
-        } else if (!isJump()) // 不动的时候，初始化动作
-            setAction(getDir() == DIR_LEFT ? ACTION_STAND_LEFT :
-                              ACTION_STAND_RIGHT);
-
-        // TODO 设置状态
+            x += dis;
+            if (x + dis < Player.X_DEFAULT)
+                dis = Player.X_DEFAULT - x;
+            if (!isJump)
+                action = ACTION_RUN_LEFT;
+            else
+                action = ACTION_JUMP_LEFT;
+        } else if (!isJump) // 不动的时候，初始化动作
+            action = getDir() == DIR_LEFT ? ACTION_STAND_LEFT :
+                    ACTION_STAND_RIGHT;
+        else // 跳跃状态
+            action =
+                    getDir() == DIR_LEFT ? ACTION_JUMP_LEFT : ACTION_JUMP_RIGHT;
     }
 
     // 绘制角色的动画帧
@@ -263,63 +305,66 @@ public class Player {
                 Graphics.Trans.TRANS_NONE;
 
         // 绘制脚部
-        Bitmap bitmap = legArr[legIndex];
-        if (bitmap == null || bitmap.isRecycled())
+        currentLegBitmap = legArr[legIndex];
+        if (currentLegBitmap == null || currentLegBitmap.isRecycled())
             return;
 
-        int drawX = X_DEFAULT - bitmap.getWidth() / 2;
-        int drawY = y - bitmap.getHeight();
-        Graphics.drawMatrixImage(canvas, bitmap, 0, 0, bitmap.getWidth(),
-                                 bitmap.getHeight(), trans, drawX, drawY, 0,
-                                 Graphics.DEFAULT_TIMES_SCALE);
-        currentLegBitmap = bitmap;
+        int drawX = X_DEFAULT - currentLegBitmap.getWidth() / 2;
+        int drawY = y - currentLegBitmap.getHeight();
+        Graphics.drawMatrixImage(canvas, currentLegBitmap, 0, 0,
+                                 currentLegBitmap.getWidth(),
+                                 currentLegBitmap.getHeight(), trans, drawX,
+                                 drawY, 0, Graphics.DEFAULT_TIMES_SCALE);
 
         // 绘制头部
-        Bitmap bitmap2 = headArr[headIndex];
-        if (bitmap2 == null || bitmap2.isRecycled())
+        currentHeadBitmap = headArr[headIndex];
+        if (currentHeadBitmap == null || currentHeadBitmap.isRecycled())
             return;
         // 微调图片
         // 取中点
-        drawX = X_DEFAULT - bitmap2.getWidth() / 2;
+        drawX = X_DEFAULT - currentHeadBitmap.getWidth() / 2;
         switch (action) {
             case ACTION_STAND_RIGHT:
                 drawX += (int) (10 * ResourceManager.scale);
-                drawY = drawY - bitmap2
+                drawY = drawY - currentHeadBitmap
                         .getHeight() + (int) (25 * ResourceManager.scale);
                 break;
             case ACTION_STAND_LEFT:
                 drawX -= (int) (15 * ResourceManager.scale);
-                drawY = drawY - bitmap2
+                drawY = drawY - currentHeadBitmap
                         .getHeight() + (int) (25 * ResourceManager.scale);
                 break;
             case ACTION_RUN_RIGHT:
                 drawX += (int) (18 * ResourceManager.scale);
-                drawY = drawY - bitmap2
+                drawY = drawY - currentHeadBitmap
                         .getHeight() + (int) (30 * ResourceManager.scale);
                 break;
             case ACTION_RUN_LEFT:
-                // TODO
                 drawX -= (int) (17 * ResourceManager.scale);
-                drawY = drawY - bitmap2
+                drawY = drawY - currentHeadBitmap
                         .getHeight() + (int) (30 * ResourceManager.scale);
                 break;
             case ACTION_JUMP_RIGHT:
-                // TODO
+                drawX -= (int) (5 * ResourceManager.scale);
+                drawY = drawY - currentHeadBitmap
+                        .getHeight() + (int) (10 * ResourceManager.scale);
                 break;
             case ACTION_JUMP_LEFT:
-                // TODO
+                drawX += (int) (2 * ResourceManager.scale);
+                drawY = drawY - currentHeadBitmap
+                        .getHeight() + (int) (10 * ResourceManager.scale);
                 break;
         }
-        Graphics.drawMatrixImage(canvas, bitmap2, 0, 0, bitmap2.getWidth(),
-                                 bitmap2.getHeight(), trans, drawX, drawY, 0,
-                                 Graphics.DEFAULT_TIMES_SCALE);
+        Graphics.drawMatrixImage(canvas, currentHeadBitmap, 0, 0,
+                                 currentHeadBitmap.getWidth(),
+                                 currentHeadBitmap.getHeight(), trans, drawX,
+                                 drawY, 0, Graphics.DEFAULT_TIMES_SCALE);
         currentHeadDrawX = drawX;
         currentHeadDrawY = drawY;
-        currentHeadBitmap = bitmap2;
 
         // drawCount控制该方法每调用4次才会切换到下一帧位图
         drawCount++;
-        if (drawCount >= 4) {
+        if (drawCount >= DRAW_COUNT_TIME) {
             drawCount = 0;
             legIndex++;
             headIndex++;
@@ -493,29 +538,5 @@ public class Player {
 
     public void setHp(int hp) {
         this.hp = hp;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getAction() {
-        return action;
-    }
-
-    public void setAction(int action) {
-        this.action = action;
-    }
-
-    public boolean isJump() {
-        return isJump;
-    }
-
-    public void setIsJump(boolean isJump) {
-        this.isJump = isJump;
     }
 }

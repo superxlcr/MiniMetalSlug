@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.github.superxlcr.minimetalslug.Utils.Utils;
 import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
+import com.github.superxlcr.minimetalslug.model.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +31,9 @@ public class MonsterManager {
      * @return 是否生成成功
      */
     public static boolean generateMonster() {
-        // TODO
-        if (monsterList.size() > 20)
+        // 个数大于10个，或90%几率不生成怪物
+        if (monsterList.size() > 10 || Utils.rand(100) > 10)
             return false;
-        //TODO 个数
         Class myClass = monsterClass[Utils.rand(monsterClass.length)];
         try {
             Object object = myClass.newInstance();
@@ -122,6 +122,24 @@ public class MonsterManager {
                 delList.add(monster);
         }
         dieMonsterList.removeAll(delList);
+    }
+
+    /**
+     * 检查玩家是否与怪物发生碰撞
+     */
+    public static void checkMonsterHitByPlayer() {
+        for (Monster monster : monsterList) {
+            if (monster.isHit(Player.X_DEFAULT, Player.Y_DEFAULT)) {
+                // 怪物被玩家撞到
+                if (monster.hitByPlayer()) {
+                    monsterList.remove(monster);
+                    dieMonsterList.add(monster);
+                    monster.setIsDie(true);
+                    // TODO dieMusic
+                    return;
+                }
+            }
+        }
     }
 
 }

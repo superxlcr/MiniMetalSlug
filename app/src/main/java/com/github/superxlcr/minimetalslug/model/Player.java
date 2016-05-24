@@ -532,10 +532,6 @@ public class Player {
         return hp <= 0;
     }
 
-    public int getHp() {
-        return hp;
-    }
-
     public void setHp(int hp) {
         this.hp = hp;
     }

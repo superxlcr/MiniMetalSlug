@@ -110,6 +110,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         surfaceHolder.addCallback(this);
     }
 
+    // TODO 睡眠时间
     // 两次调度间隔
     public static final int SLEEP_TIME = 40;
     // 最小暂停时间

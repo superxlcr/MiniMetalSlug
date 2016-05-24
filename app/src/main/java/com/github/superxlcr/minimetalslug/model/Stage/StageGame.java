@@ -142,9 +142,12 @@ public class StageGame extends Stage {
         MonsterManager.generateMonster();
         // 处理角色引起的怪物位移
         MonsterManager.updatePosition(Player.player.getShift());
+        // 检查怪物是否与玩家发生碰撞
+        MonsterManager.checkMonsterHitByPlayer();
         // 移动子弹
         BulletManager.movePosition();
-        // TODO 处理角色引起的子弹位移
+        // 处理角色引起的子弹位移
+        BulletManager.updatePosition(Player.player.getShift());
         // 检查子弹命中
         BulletManager.checkHit();
         // 处理角色死亡
@@ -167,7 +170,8 @@ public class StageGame extends Stage {
         ResourceManager.drawMap(canvas);
         // 绘制怪物
         MonsterManager.drawMonster(canvas);
-        // TODO 绘制子弹
+        // 绘制子弹
+        BulletManager.drawBullet(canvas);
         // 绘制角色
         Player.player.draw(canvas);
     }

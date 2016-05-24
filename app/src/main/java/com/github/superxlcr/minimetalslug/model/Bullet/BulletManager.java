@@ -1,7 +1,9 @@
 package com.github.superxlcr.minimetalslug.model.Bullet;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
+import com.github.superxlcr.minimetalslug.Utils.Graphics;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.model.Monster.MonsterManager;
 
@@ -15,9 +17,9 @@ import java.util.List;
 public class BulletManager {
 
     // 怪物的子弹
-    public static List<Bullet> monsterBulletList = new ArrayList<>();
+    private static List<Bullet> monsterBulletList = new ArrayList<>();
     // 玩家的子弹
-    public static List<Bullet> playerBulletList = new ArrayList<>();
+    private static List<Bullet> playerBulletList = new ArrayList<>();
 
     /**
      * 通过shift更新子弹位置
@@ -90,24 +92,31 @@ public class BulletManager {
      * @param canvas 画布
      */
     public static void drawBullet(Canvas canvas) {
-        List<Bullet> delList = new ArrayList<>();
         for (Bullet bullet : monsterBulletList) {
-            bullet.move();
-            if (bullet.getX() < 0 || bullet
-                    .getX() > ResourceManager.SCREEN_WIDTH ||
-                    bullet.getY() < 0)
-                delList.add(bullet);
+            Bitmap bitmap = bullet.getBitmap();
+            if (bitmap == null || bitmap.isRecycled())
+                continue;
+            Graphics.drawImage(canvas, bitmap, 0, 0, bitmap.getWidth(),
+                               bitmap.getHeight(), bullet.getX(),
+                               bullet.getY());
         }
-        monsterBulletList.removeAll(delList);
-        delList.clear();
         for (Bullet bullet : playerBulletList) {
-            bullet.move();
-            if (bullet.getX() < 0 || bullet
-                    .getX() > ResourceManager.SCREEN_WIDTH ||
-                    bullet.getY() < 0)
-                delList.add(bullet);
+            Bitmap bitmap = bullet.getBitmap();
+            if (bitmap == null || bitmap.isRecycled())
+                continue;
+            Graphics.drawImage(canvas, bitmap, 0, 0, bitmap.getWidth(),
+                               bitmap.getHeight(), bullet.getX(),
+                               bullet.getY());
         }
-        playerBulletList.removeAll(delList);
+    }
+
+    /**
+     * 添加怪物的子弹
+     *
+     * @param bullet 子弹
+     */
+    public static void addMonsterBullet(Bullet bullet) {
+        monsterBulletList.add(bullet);
     }
 
 }

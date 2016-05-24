@@ -6,6 +6,10 @@ import android.graphics.Canvas;
 import com.github.superxlcr.minimetalslug.MainActivity;
 import com.github.superxlcr.minimetalslug.R;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
+import com.github.superxlcr.minimetalslug.Utils.Utils;
+import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
+import com.github.superxlcr.minimetalslug.model.Bullet.ManBullet;
+import com.github.superxlcr.minimetalslug.model.Player;
 
 /**
  * 普通人类怪物
@@ -74,5 +78,20 @@ public class Man extends Monster {
     @Override
     protected int getShootIndex() {
         return 2;
+    }
+
+    @Override
+    public Bullet getBullet() {
+        return new ManBullet(getX(),
+                             getY() - (int) (80 * ResourceManager.scale),
+                             Player.DIR_LEFT);
+    }
+
+    @Override
+    public boolean shootOrNot() {
+        // 50%几率射击
+        if (Utils.rand(100) > 50)
+            return false;
+        return true;
     }
 }

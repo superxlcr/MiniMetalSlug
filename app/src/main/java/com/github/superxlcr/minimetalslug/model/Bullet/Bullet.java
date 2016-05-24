@@ -23,6 +23,7 @@ public abstract class Bullet {
         this.x = x;
         this.y = y;
         this.dir = dir;
+        alreadyShift = Player.player.getShift();
     }
 
     /**

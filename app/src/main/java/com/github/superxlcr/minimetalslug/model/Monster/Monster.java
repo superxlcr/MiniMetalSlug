@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import com.github.superxlcr.minimetalslug.Utils.Graphics;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.Utils.Utils;
+import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
+import com.github.superxlcr.minimetalslug.model.Bullet.BulletManager;
 import com.github.superxlcr.minimetalslug.model.Player;
 
 /**
@@ -129,16 +131,17 @@ public abstract class Monster {
             endY = drawY + bitmap.getHeight();
         }
         // 判读是否射击
-        if (!isDie && drawIndex == getShootIndex()) {
-            //TODO addBullet();
+        if (!isDie && drawIndex == getShootIndex() && drawCount == 0) {
+            if (shootOrNot())
+                BulletManager.addMonsterBullet(getBullet());
         }
     }
 
     /**
-     * 判断是否怪物子弹被击中
+     * 判断是否怪物被击中
      *
-     * @param x 子弹x
-     * @param y 子弹y
+     * @param x x
+     * @param y y
      * @return 是否被击中
      */
     public boolean isHit(int x, int y) {
@@ -165,6 +168,15 @@ public abstract class Monster {
     }
 
     /**
+     * 获取怪物y坐标
+     *
+     * @return y坐标
+     */
+    public int getY() {
+        return y;
+    }
+
+    /**
      * 设置怪物是否死亡
      *
      * @param isDie 是否死亡
@@ -181,4 +193,25 @@ public abstract class Monster {
     public boolean isDieFinish() {
         return isDie & dieFinish;
     }
+
+    /**
+     * 获取怪物子弹类型
+     *
+     * @return 子弹4
+     */
+    public abstract Bullet getBullet();
+
+    /**
+     * 是否射击
+     *
+     * @return 布尔值表示是否射击
+     */
+    public abstract boolean shootOrNot();
+
+    /**
+     * 撞到玩家
+     *
+     * @return 是否从列表移除该怪物
+     */
+    public boolean hitByPlayer() { return false; }
 }

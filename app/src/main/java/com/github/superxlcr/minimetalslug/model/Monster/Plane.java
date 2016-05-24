@@ -7,6 +7,9 @@ import com.github.superxlcr.minimetalslug.MainActivity;
 import com.github.superxlcr.minimetalslug.R;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.Utils.Utils;
+import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
+import com.github.superxlcr.minimetalslug.model.Bullet.PlaneBullet;
+import com.github.superxlcr.minimetalslug.model.Player;
 
 /**
  * 飞机怪物
@@ -105,8 +108,22 @@ public class Plane extends Monster {
         return 4;
     }
 
+    // 最后一帧射击
     @Override
     protected int getShootIndex() {
         return image.length - 1;
+    }
+
+    @Override
+    public Bullet getBullet() {
+        return new PlaneBullet(getX(), getY(), Player.DIR_LEFT);
+    }
+
+    @Override
+    public boolean shootOrNot() {
+        // 50%几率射击
+        if (Utils.rand(100) > 50)
+            return false;
+        return true;
     }
 }

@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import com.github.superxlcr.minimetalslug.MainActivity;
 import com.github.superxlcr.minimetalslug.R;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
+import com.github.superxlcr.minimetalslug.Utils.Utils;
+import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
 
 /**
  * 炸弹怪物
@@ -33,28 +35,22 @@ public class Bomb extends Monster {
         if (dieImage == null) {
             dieImage = new Bitmap[6];
             dieImage[0] = ResourceManager
-                    .createBitmapByID(MainActivity.resources,
-                                      R.mipmap.bomb2_1,
+                    .createBitmapByID(MainActivity.resources, R.mipmap.bomb2_1,
                                       ResourceManager.scale);
             dieImage[1] = ResourceManager
-                    .createBitmapByID(MainActivity.resources,
-                                      R.mipmap.bomb2_2,
+                    .createBitmapByID(MainActivity.resources, R.mipmap.bomb2_2,
                                       ResourceManager.scale);
             dieImage[2] = ResourceManager
-                    .createBitmapByID(MainActivity.resources,
-                                      R.mipmap.bomb2_3,
+                    .createBitmapByID(MainActivity.resources, R.mipmap.bomb2_3,
                                       ResourceManager.scale);
             dieImage[3] = ResourceManager
-                    .createBitmapByID(MainActivity.resources,
-                                      R.mipmap.bomb2_4,
+                    .createBitmapByID(MainActivity.resources, R.mipmap.bomb2_4,
                                       ResourceManager.scale);
             dieImage[4] = ResourceManager
-                    .createBitmapByID(MainActivity.resources,
-                                      R.mipmap.bomb2_5,
+                    .createBitmapByID(MainActivity.resources, R.mipmap.bomb2_5,
                                       ResourceManager.scale);
             dieImage[4] = ResourceManager
-                    .createBitmapByID(MainActivity.resources,
-                                      R.mipmap.bomb2_6,
+                    .createBitmapByID(MainActivity.resources, R.mipmap.bomb2_6,
                                       ResourceManager.scale);
         }
     }
@@ -73,5 +69,24 @@ public class Bomb extends Monster {
     @Override
     protected int getShootIndex() {
         return -1;
+    }
+
+    // 炸弹没有子弹
+    @Override
+    public Bullet getBullet() {
+        return null;
+    }
+
+    @Override
+    public boolean shootOrNot() {
+        // 不会射击
+        return false;
+    }
+
+    // 被玩家撞到就爆炸
+    @Override
+    public boolean hitByPlayer() {
+        // TODO 玩家扣血
+        return true;
     }
 }

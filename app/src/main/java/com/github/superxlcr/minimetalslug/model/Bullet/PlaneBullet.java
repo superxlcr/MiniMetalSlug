@@ -29,7 +29,7 @@ public class PlaneBullet extends Bullet {
 
     @Override
     public int getAbsSpeedX() {
-        return (int) (ResourceManager.scale * 8);
+        return (int) (ResourceManager.scale * 10);
     }
 
     @Override

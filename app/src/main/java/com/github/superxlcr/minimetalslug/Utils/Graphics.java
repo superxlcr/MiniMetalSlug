@@ -255,4 +255,43 @@ public final class Graphics {
         canvas.drawText(text, x, y, paint);
     }
 
+    /**
+     * 绘制矩形
+     *
+     * @param canvas      画布
+     * @param left        左
+     * @param top         上
+     * @param right       右
+     * @param bottom      下
+     * @param borderColor 边界颜色
+     * @param borderWidth 边界粗细
+     */
+    public static void drawRectengle(Canvas canvas, int left, int top,
+            int right, int bottom, int borderColor, int borderWidth) {
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(borderWidth);
+        paint.setColor(Color.rgb((borderColor & 0xff0000) >> 16,
+                                 (borderColor & 0x00ff00) >> 8,
+                                 (borderColor & 0x0000ff)));
+        canvas.drawRect(left, top, right, bottom, paint);
+    }
+
+    /**
+     * 绘制点
+     *
+     * @param canvas 画布
+     * @param x      x坐标
+     * @param y      y坐标
+     * @param color  颜色
+     */
+    public static void drawPoint(Canvas canvas, int x, int y, int color,
+            int width) {
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(
+                Color.rgb((color & 0xff0000) >> 16, (color & 0x00ff00) >> 8,
+                          (color & 0x0000ff)));
+        canvas.drawCircle(x, y, width, paint);
+    }
 }

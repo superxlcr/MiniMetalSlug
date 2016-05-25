@@ -140,12 +140,18 @@ public abstract class Monster {
     /**
      * 判断是否怪物被击中
      *
-     * @param x x
-     * @param y y
-     * @return 是否被击中
+     * @param left   左坐标
+     * @param top    上坐标
+     * @param right  右坐标
+     * @param bottom 下坐标
+     * @return
      */
-    public boolean isHit(int x, int y) {
-        return x >= startX && x <= endX && y >= startY && y <= endY;
+    public boolean isHit(int left, int top, int right, int bottom) {
+        if (right >= startX && right <= endX || left >= startX && left <= endX)
+            if (top >= startY && top <= endY || bottom >= startY && bottom <=
+                    endY)
+                return true;
+        return false;
     }
 
     /**
@@ -214,4 +220,13 @@ public abstract class Monster {
      * @return 是否从列表移除该怪物
      */
     public boolean hitByPlayer() { return false; }
+
+    /**
+     * 绘制怪物判断框
+     *
+     * @param canvas 画布
+     */
+    public void drawMonsterRect(Canvas canvas) {
+        Graphics.drawRectengle(canvas, startX, startY, endX, endY, 0x00ff00, 5);
+    }
 }

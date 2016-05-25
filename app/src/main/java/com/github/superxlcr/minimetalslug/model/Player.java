@@ -10,6 +10,7 @@ import com.github.superxlcr.minimetalslug.R;
 import com.github.superxlcr.minimetalslug.Utils.Graphics;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
+import com.github.superxlcr.minimetalslug.model.Bullet.BulletManager;
 import com.github.superxlcr.minimetalslug.model.Bullet.MyBullet;
 import com.github.superxlcr.minimetalslug.model.Monster.MonsterManager;
 
@@ -98,10 +99,6 @@ public class Player {
     private int legIndex = 0;
     // 头部绘制帧数计数
     private int headIndex = 0;
-    // 头部图片x
-    private int currentHeadDrawX = 0;
-    // 头部图片y
-    private int currentHeadDrawY = 0;
     // 当前绘制腿部动画帧
     private Bitmap currentLegBitmap = null;
     // 当前绘制头部动画帧
@@ -111,14 +108,36 @@ public class Player {
     // 动画刷新计数器
     private int drawCount = 0;
 
+    // 角色定位相关坐标
+    private int left = 0;
+    private int top = 0;
+    private int right = 0;
+    private int bottom = 0;
+
     public Player(String name, int maxHp) {
         // 初始化图片组
         intitalBitmapArrays();
+        // 初始化角色位置
+        initPosition();
         // 设置姓名与血量
         this.name = name;
         this.hp = maxHp;
         // 目前只有一种枪
         this.gun = MyBullet.class;
+    }
+
+    /**
+     * 绘制角色判断框
+     *
+     * @param canvas 画布
+     */
+    public void drawPlayerRect(Canvas canvas) {
+        if (currentHeadBitmap != null && !currentHeadBitmap
+                .isRecycled() && currentLegBitmap != null && !currentLegBitmap
+                .isRecycled()) {
+            Graphics.drawRectengle(canvas, left, top, right, bottom, 0xff0000,
+                                   5);
+        }
     }
 
     /**
@@ -128,6 +147,15 @@ public class Player {
         // 不处于跳跃状态
         if (!isJump)
             isJump = true;
+    }
+
+    /**
+     * 执行射击方法
+     */
+    public void fire() {
+        // 不处于发射状态或冷却状态
+        if (leftShootTime == 0)
+            leftShootTime = MAX_LEFT_SHOOT_TIME;
     }
 
     /**
@@ -215,8 +243,11 @@ public class Player {
      * @return 偏移，正为向右，负为向左
      */
     public int getShift() {
-        if (x <= 0 || y <= 0)
-            initPosition();
+        // 防止出界
+        if (x <= 0)
+            x = X_DEFAULT;
+        if (y <= 0)
+            y = Y_DEFAULT;
         int shift = x - X_DEFAULT;
         // 不能往左走
         if (shift < 0)
@@ -246,11 +277,12 @@ public class Player {
         Graphics.drawBorderString(canvas, 0x066a14, 0x91ff1d, "HP: " + hp,
                                   head.getWidth(),
                                   (int) ResourceManager.scale * 100, 3, paint);
-        // TODO 测试怪物数
-        Graphics.drawBorderString(canvas, 0xa33e11, 0xffde00,
-                                  "怪物数: " + MonsterManager.monsterList.size(),
-                                  head.getWidth(),
-                                  (int) ResourceManager.scale * 150, 3, paint);
+        if (MainActivity.DEBUG) // 显示测试怪物数
+            Graphics.drawBorderString(canvas, 0xa33e11, 0xffde00,
+                                      "怪物数: " + MonsterManager.monsterList
+                                              .size(), head.getWidth(),
+                                      (int) ResourceManager.scale * 150, 3,
+                                      paint);
     }
 
     // 角色移动
@@ -295,7 +327,11 @@ public class Player {
             return;
         if (legArr == null || headArr == null)
             return;
-        // TODO 射击状态图片处理
+        // 射击状态图片处理
+        if (leftShootTime != 0)
+            headArr = headShootImage;
+        if (leftShootTime == MAX_LEFT_SHOOT_TIME)
+            headIndex = 0;
 
         legIndex = legIndex % legArr.length;
         headIndex = headIndex % headArr.length;
@@ -315,6 +351,10 @@ public class Player {
                                  currentLegBitmap.getWidth(),
                                  currentLegBitmap.getHeight(), trans, drawX,
                                  drawY, 0, Graphics.DEFAULT_TIMES_SCALE);
+        // 图片坐标
+        left = drawX;
+        right = drawX + currentLegBitmap.getWidth();
+        bottom = drawY + currentLegBitmap.getHeight();
 
         // 绘制头部
         currentHeadBitmap = headArr[headIndex];
@@ -323,44 +363,81 @@ public class Player {
         // 微调图片
         // 取中点
         drawX = X_DEFAULT - currentHeadBitmap.getWidth() / 2;
-        switch (action) {
-            case ACTION_STAND_RIGHT:
-                drawX += (int) (10 * ResourceManager.scale);
-                drawY = drawY - currentHeadBitmap
-                        .getHeight() + (int) (25 * ResourceManager.scale);
-                break;
-            case ACTION_STAND_LEFT:
-                drawX -= (int) (15 * ResourceManager.scale);
-                drawY = drawY - currentHeadBitmap
-                        .getHeight() + (int) (25 * ResourceManager.scale);
-                break;
-            case ACTION_RUN_RIGHT:
-                drawX += (int) (18 * ResourceManager.scale);
-                drawY = drawY - currentHeadBitmap
-                        .getHeight() + (int) (30 * ResourceManager.scale);
-                break;
-            case ACTION_RUN_LEFT:
-                drawX -= (int) (17 * ResourceManager.scale);
-                drawY = drawY - currentHeadBitmap
-                        .getHeight() + (int) (30 * ResourceManager.scale);
-                break;
-            case ACTION_JUMP_RIGHT:
-                drawX -= (int) (5 * ResourceManager.scale);
-                drawY = drawY - currentHeadBitmap
-                        .getHeight() + (int) (10 * ResourceManager.scale);
-                break;
-            case ACTION_JUMP_LEFT:
-                drawX += (int) (2 * ResourceManager.scale);
-                drawY = drawY - currentHeadBitmap
-                        .getHeight() + (int) (10 * ResourceManager.scale);
-                break;
+        if (leftShootTime == 0) { // 非射击状态
+            switch (action) {
+                case ACTION_STAND_RIGHT:
+                    drawX += (int) (10 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (25 * ResourceManager.scale);
+                    break;
+                case ACTION_STAND_LEFT:
+                    drawX -= (int) (15 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (25 * ResourceManager.scale);
+                    break;
+                case ACTION_RUN_RIGHT:
+                    drawX += (int) (18 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (30 * ResourceManager.scale);
+                    break;
+                case ACTION_RUN_LEFT:
+                    drawX -= (int) (17 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (30 * ResourceManager.scale);
+                    break;
+                case ACTION_JUMP_RIGHT:
+                    drawX -= (int) (5 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (10 * ResourceManager.scale);
+                    break;
+                case ACTION_JUMP_LEFT:
+                    drawX += (int) (2 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (10 * ResourceManager.scale);
+                    break;
+            }
+        } else { // 射击状态
+            switch (action) {
+                case ACTION_STAND_RIGHT:
+                    drawX += (int) (28 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (15 * ResourceManager.scale);
+                    break;
+                case ACTION_STAND_LEFT:
+                    drawX -= (int) (18 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (15 * ResourceManager.scale);
+                    break;
+                case ACTION_RUN_RIGHT:
+                    drawX += (int) (20 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (15 * ResourceManager.scale);
+                    break;
+                case ACTION_RUN_LEFT:
+                    drawX -= (int) (20 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (15 * ResourceManager.scale);
+                    break;
+                case ACTION_JUMP_RIGHT:
+                    drawX += (int) (28 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (15 * ResourceManager.scale);
+                    break;
+                case ACTION_JUMP_LEFT:
+                    drawX -= (int) (18 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (15 * ResourceManager.scale);
+                    break;
+            }
         }
         Graphics.drawMatrixImage(canvas, currentHeadBitmap, 0, 0,
                                  currentHeadBitmap.getWidth(),
                                  currentHeadBitmap.getHeight(), trans, drawX,
                                  drawY, 0, Graphics.DEFAULT_TIMES_SCALE);
-        currentHeadDrawX = drawX;
-        currentHeadDrawY = drawY;
+        // 图片坐标更新
+        top = drawY;
+        left = Math.min(left, drawX);
+        right = Math.max(right, drawX + currentHeadBitmap.getWidth());
 
         // drawCount控制该方法每调用4次才会切换到下一帧位图
         drawCount++;
@@ -368,6 +445,22 @@ public class Player {
             drawCount = 0;
             legIndex++;
             headIndex++;
+            // 射击相关
+            if (leftShootTime != 0) {
+                // 射击时间刷新
+                leftShootTime--;
+                if (headIndex == 2) {
+                    int bulletX;
+                    if (getDir() == DIR_RIGHT)
+                        bulletX = right;
+                    else
+                        bulletX = left;
+                    int bulletY = top + (int) (15 * ResourceManager.scale);
+                    BulletManager.addPlayerBullet(
+                            new MyBullet(bulletX, bulletY, getDir()));
+                }
+                // TODO 射击！
+            }
         }
         // 画左上角的角色、名字、血量
         drawHead(canvas);
@@ -534,5 +627,21 @@ public class Player {
 
     public void setHp(int hp) {
         this.hp = hp;
+    }
+
+    public int getLeft() {
+        return left;
+    }
+
+    public int getTop() {
+        return top;
+    }
+
+    public int getRight() {
+        return right;
+    }
+
+    public int getBottom() {
+        return bottom;
     }
 }

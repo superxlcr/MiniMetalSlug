@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.github.superxlcr.minimetalslug.GameView;
+import com.github.superxlcr.minimetalslug.MainActivity;
 import com.github.superxlcr.minimetalslug.R;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.model.Bullet.BulletManager;
@@ -106,7 +107,7 @@ public class StageGame extends Stage {
             fireButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO fire
+                    Player.player.fire();
                 }
             });
             // 跳跃按钮
@@ -174,5 +175,7 @@ public class StageGame extends Stage {
         BulletManager.drawBullet(canvas);
         // 绘制角色
         Player.player.draw(canvas);
+        if (MainActivity.DEBUG) // 绘制判定角色框
+            Player.player.drawPlayerRect(canvas);
     }
 }

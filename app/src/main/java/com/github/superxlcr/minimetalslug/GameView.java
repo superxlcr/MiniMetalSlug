@@ -4,26 +4,14 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 
-import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
-import com.github.superxlcr.minimetalslug.model.Bullet.BulletManager;
-import com.github.superxlcr.minimetalslug.model.Monster.MonsterManager;
-import com.github.superxlcr.minimetalslug.model.Player;
 import com.github.superxlcr.minimetalslug.model.Stage.Stage;
 import com.github.superxlcr.minimetalslug.model.Stage.StageInit;
 import com.github.superxlcr.minimetalslug.model.Stage.StageQuit;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 游戏界面

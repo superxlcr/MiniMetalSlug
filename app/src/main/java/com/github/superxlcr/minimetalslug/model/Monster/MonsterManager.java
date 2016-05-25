@@ -3,6 +3,7 @@ package com.github.superxlcr.minimetalslug.model.Monster;
 import android.graphics.Canvas;
 import android.util.Log;
 
+import com.github.superxlcr.minimetalslug.MainActivity;
 import com.github.superxlcr.minimetalslug.Utils.Utils;
 import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
 import com.github.superxlcr.minimetalslug.model.Player;
@@ -28,6 +29,7 @@ public class MonsterManager {
 
     /**
      * 生成怪物
+     *
      * @return 是否生成成功
      */
     public static boolean generateMonster() {
@@ -39,7 +41,7 @@ public class MonsterManager {
             Object object = myClass.newInstance();
             // 类型检查
             if (object instanceof Monster) {
-                monsterList.add((Monster)object);
+                monsterList.add((Monster) object);
                 return true;
             }
             return false;
@@ -52,6 +54,7 @@ public class MonsterManager {
 
     /**
      * 更新怪物坐标
+     *
      * @param shift x左移大小，可为负值
      */
     public static void updatePosition(int shift) {
@@ -84,6 +87,7 @@ public class MonsterManager {
 
     /**
      * 检查怪物是否被子弹击中
+     *
      * @param bullet 子弹
      * @return 是否被击中
      */
@@ -91,7 +95,9 @@ public class MonsterManager {
         if (bullet == null)
             return false;
         for (Monster monster : monsterList) {
-            if (monster.isHit(bullet.getX(), bullet.getY())) {
+            if (monster
+                    .isHit(bullet.getLeft(), bullet.getTop(), bullet.getRight(),
+                           bullet.getBottom())) {
                 // 怪物被击中
                 monsterList.remove(monster);
                 dieMonsterList.add(monster);
@@ -105,14 +111,18 @@ public class MonsterManager {
 
     /**
      * 绘制怪物
+     *
      * @param canvas 画布
      */
     public static void drawMonster(Canvas canvas) {
         if (canvas == null)
             return;
         // 活着的怪物
-        for (Monster monster : monsterList)
+        for (Monster monster : monsterList) {
             monster.draw(canvas);
+            if (MainActivity.DEBUG) // 调试绘制边框
+                monster.drawMonsterRect(canvas);
+        }
         // 死亡的怪物
         List<Monster> delList = new ArrayList<>();
         for (Monster monster : dieMonsterList) {
@@ -129,7 +139,9 @@ public class MonsterManager {
      */
     public static void checkMonsterHitByPlayer() {
         for (Monster monster : monsterList) {
-            if (monster.isHit(Player.X_DEFAULT, Player.Y_DEFAULT)) {
+            if (monster.isHit(Player.player.getLeft(), Player.player.getTop(),
+                              Player.player.getRight(),
+                              Player.player.getBottom())) {
                 // 怪物被玩家撞到
                 if (monster.hitByPlayer()) {
                     monsterList.remove(monster);

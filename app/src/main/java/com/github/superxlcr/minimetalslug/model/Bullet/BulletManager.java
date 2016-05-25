@@ -3,9 +3,11 @@ package com.github.superxlcr.minimetalslug.model.Bullet;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
+import com.github.superxlcr.minimetalslug.MainActivity;
 import com.github.superxlcr.minimetalslug.Utils.Graphics;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.model.Monster.MonsterManager;
+import com.github.superxlcr.minimetalslug.model.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,14 +101,29 @@ public class BulletManager {
             Graphics.drawImage(canvas, bitmap, 0, 0, bitmap.getWidth(),
                                bitmap.getHeight(), bullet.getX(),
                                bullet.getY());
+            if (MainActivity.DEBUG) // 调试模式绘制框
+                Graphics.drawRectengle(canvas, bullet.getLeft(),
+                                       bullet.getTop(), bullet.getRight(),
+                                       bullet.getBottom(), 0x00ff00, 5);
         }
         for (Bullet bullet : playerBulletList) {
             Bitmap bitmap = bullet.getBitmap();
             if (bitmap == null || bitmap.isRecycled())
                 continue;
-            Graphics.drawImage(canvas, bitmap, 0, 0, bitmap.getWidth(),
-                               bitmap.getHeight(), bullet.getX(),
-                               bullet.getY());
+            if (bullet.getDir() == Player.DIR_RIGHT) // 向右射击
+                Graphics.drawImage(canvas, bitmap, 0, 0, bitmap.getWidth(),
+                                   bitmap.getHeight(), bullet.getX(),
+                                   bullet.getY());
+            else // 向左射击
+                Graphics.drawMatrixImage(canvas, bitmap, 0, 0,
+                                         bitmap.getWidth(), bitmap.getHeight(),
+                                         Graphics.Trans.TRANS_MIRROR,
+                                         bullet.getX(), bullet.getY(), 0,
+                                         Graphics.DEFAULT_TIMES_SCALE);
+            if (MainActivity.DEBUG) // 调试模式绘制框
+                Graphics.drawRectengle(canvas, bullet.getLeft(),
+                                       bullet.getTop(), bullet.getRight(),
+                                       bullet.getBottom(), 0xff0000, 5);
         }
     }
 
@@ -119,4 +136,12 @@ public class BulletManager {
         monsterBulletList.add(bullet);
     }
 
+    /**
+     * 添加玩家的子弹
+     *
+     * @param bullet 子弹
+     */
+    public static void addPlayerBullet(Bullet bullet) {
+        playerBulletList.add(bullet);
+    }
 }

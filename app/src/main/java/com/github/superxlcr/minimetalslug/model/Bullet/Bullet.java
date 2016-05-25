@@ -72,4 +72,24 @@ public abstract class Bullet {
     public int getY() {
         return y;
     }
+
+    public int getLeft() {
+        return x;
+    }
+
+    public int getTop() {
+        return y;
+    }
+
+    public int getRight() {
+        return x + getBitmap().getWidth();
+    }
+
+    public int getBottom() {
+        return y + getBitmap().getHeight();
+    }
+
+    public int getDir() {
+        return dir;
+    }
 }

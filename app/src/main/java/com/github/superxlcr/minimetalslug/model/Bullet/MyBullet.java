@@ -15,7 +15,7 @@ public class MyBullet extends Bullet {
     public static Bitmap bitmap = null;
 
     public MyBullet(int x, int y, int dir) {
-        // TODO y速率
+        // TODO y加速度
         super(x, y, dir);
         if (bitmap == null)
             bitmap = ResourceManager

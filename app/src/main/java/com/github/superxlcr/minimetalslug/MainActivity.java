@@ -9,7 +9,8 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity {
-
+    // TODO 调试模式
+    public static final boolean DEBUG = true;
     // 主布局容器
     public static FrameLayout mainLayout = null;
     // 主布局参数

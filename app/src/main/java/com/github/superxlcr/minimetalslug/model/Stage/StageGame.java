@@ -129,6 +129,30 @@ public class StageGame extends Stage {
                     Player.player.jump();
                 }
             });
+            // 调试按钮
+            Button settingsButton = new Button(mainContext);
+            // 生成id
+            settingsButton.setId(View.generateViewId());
+            settingsButton.setBackgroundResource(R.mipmap.settings);
+            // 添加按钮
+            params = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            params.setMargins(0, 0, (int) ResourceManager.scale * 10,
+                              (int) ResourceManager.scale * 10);
+            gameLayout.addView(settingsButton, params);
+            // 事件监听器
+            settingsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (MainActivity.DEBUG)
+                        MainActivity.DEBUG = false;
+                    else
+                        MainActivity.DEBUG = true;
+                }
+            });
             // 设置view
             GameView.viewHandler.sendMessage(GameView.viewHandler.obtainMessage(
                     GameView.SET_VIEW, gameLayout));

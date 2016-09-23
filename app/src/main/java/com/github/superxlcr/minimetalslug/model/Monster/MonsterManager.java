@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.util.Log;
 
 import com.github.superxlcr.minimetalslug.MainActivity;
+import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.Utils.Utils;
 import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
 import com.github.superxlcr.minimetalslug.model.Player;
@@ -102,7 +103,8 @@ public class MonsterManager {
                 monsterList.remove(monster);
                 dieMonsterList.add(monster);
                 monster.setIsDie(true);
-                // TODO dieMusic
+                // dieMusic
+                monster.dieMusic();
                 return true;
             }
         }
@@ -147,7 +149,8 @@ public class MonsterManager {
                     monsterList.remove(monster);
                     dieMonsterList.add(monster);
                     monster.setIsDie(true);
-                    // TODO dieMusic
+                    // dieMusic
+                    monster.dieMusic();
                     return;
                 }
             }

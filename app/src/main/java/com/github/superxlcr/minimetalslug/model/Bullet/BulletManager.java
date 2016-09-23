@@ -80,8 +80,14 @@ public class BulletManager {
         // 要删除的子弹列表
         List<Bullet> delList = new ArrayList<>();
         for (Bullet bullet : monsterBulletList) {
-            // TODO check hit player
+            // check hit player
+            if (Player.player.isHit(bullet)) {
+                delList.add(bullet);
+                Player.player.damagePlayer(10);
+            }
         }
+        monsterBulletList.removeAll(delList);
+        delList.clear();
         for (Bullet bullet : playerBulletList)
             if (MonsterManager.checkMonsterHit(bullet)) // 打中了怪物
                 delList.add(bullet);

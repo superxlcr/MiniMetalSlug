@@ -8,6 +8,7 @@ import com.github.superxlcr.minimetalslug.R;
 import com.github.superxlcr.minimetalslug.Utils.ResourceManager;
 import com.github.superxlcr.minimetalslug.Utils.Utils;
 import com.github.superxlcr.minimetalslug.model.Bullet.Bullet;
+import com.github.superxlcr.minimetalslug.model.Player;
 
 /**
  * 炸弹怪物
@@ -86,7 +87,13 @@ public class Bomb extends Monster {
     // 被玩家撞到就爆炸
     @Override
     public boolean hitByPlayer() {
-        // TODO 玩家扣血
+        // 玩家扣血
+        Player.player.damagePlayer(20);
         return true;
+    }
+
+    @Override
+    public void dieMusic() {
+        ResourceManager.SoundPoolPlay(ResourceManager.BOMB, 0.1f);
     }
 }

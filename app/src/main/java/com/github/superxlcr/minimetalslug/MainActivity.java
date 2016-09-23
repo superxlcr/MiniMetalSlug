@@ -1,6 +1,8 @@
 package com.github.superxlcr.minimetalslug;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -9,8 +11,8 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity {
-    // TODO 调试模式
-    public static final boolean DEBUG = true;
+    // 调试模式
+    public static boolean DEBUG = false;
     // 主布局容器
     public static FrameLayout mainLayout = null;
     // 主布局参数
@@ -22,9 +24,14 @@ public class MainActivity extends AppCompatActivity {
     // 窗口大小
     public static int windowWidth;
     public static int windowHeight;
+    // 音乐播放器
+    public static MediaPlayer mediaPlayer = null;
+
+    public static Context context = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        context = MainActivity.this;
         // 全屏
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -49,18 +56,25 @@ public class MainActivity extends AppCompatActivity {
                                           FrameLayout.LayoutParams
                                                   .MATCH_PARENT);
         mainLayout.addView(gameView, lp);
-        // TODO MUSIC
+        // MUSIC
+        mediaPlayer = MediaPlayer.create(this, R.raw.bgm);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.setVolume(0.1f, 0.1f);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // TODO 启动Music
+        // 启动Music
+        if (mediaPlayer != null)
+            mediaPlayer.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // TODO 暂停Music
+        // 暂停Music
+        if (mediaPlayer != null)
+            mediaPlayer.pause();
     }
 }

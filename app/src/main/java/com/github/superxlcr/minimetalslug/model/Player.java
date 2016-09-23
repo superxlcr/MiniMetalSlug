@@ -458,8 +458,8 @@ public class Player {
                     int bulletY = top + (int) (15 * ResourceManager.scale);
                     BulletManager.addPlayerBullet(
                             new MyBullet(bulletX, bulletY, getDir()));
+                    ResourceManager.SoundPoolPlay(ResourceManager.SHOT, 1);
                 }
-                // TODO 射击！
             }
         }
         // 画左上角的角色、名字、血量
@@ -629,6 +629,14 @@ public class Player {
         this.hp = hp;
     }
 
+    public int getHp() {
+        return hp;
+    }
+
+    public void damagePlayer(int damage) {
+        hp -= damage;
+    }
+
     public int getLeft() {
         return left;
     }
@@ -643,5 +651,21 @@ public class Player {
 
     public int getBottom() {
         return bottom;
+    }
+
+    /**
+     * 判断角色是否被击中
+     *
+     * @param bullet 子弹
+     * @return 是否被击中
+     */
+    public boolean isHit(Bullet bullet) {
+        if (top <= bullet.getBottom() && bottom >= bullet
+                .getBottom() || top <= bullet.getTop() && bottom >= bullet
+                .getBottom()) {
+            if (right >= bullet.getLeft() + 30)
+                return true;
+        }
+        return false;
     }
 }

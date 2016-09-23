@@ -31,6 +31,10 @@ public class ResourceManager {
     public static int SCREEN_WIDTH;
     public static int SCREEN_HEIGHT;
 
+    public static final int BOMB = 0;
+    public static final int OH = 1;
+    public static final int SHOT = 2;
+
     /**
      * 加载资源
      */
@@ -40,7 +44,15 @@ public class ResourceManager {
         SCREEN_HEIGHT = MainActivity.windowHeight;
         // 音效相关初始化
         soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-        // TODO soundMap
+        soundMap.put(BOMB, soundPool
+                .load(MainActivity.context.getApplicationContext(), R.raw.bomb,
+                      1));
+        soundMap.put(OH, soundPool
+                .load(MainActivity.context.getApplicationContext(), R.raw.oh,
+                      1));
+        soundMap.put(SHOT, soundPool
+                .load(MainActivity.context.getApplicationContext(), R.raw.shot,
+                      1));
         // 解析地图，确定缩放大小
         Bitmap temp = BitmapFactory
                 .decodeResource(MainActivity.resources, R.mipmap.map);
@@ -105,5 +117,14 @@ public class ResourceManager {
                 drawX += drawWidth;
             }
         }
+    }
+
+    /**
+     * 播放音效
+     * @param index
+     */
+    public static void SoundPoolPlay(int index, float volume) {
+        int value = soundMap.get(index);
+        soundPool.play(value, volume, volume, 1, 0, 1);
     }
 }

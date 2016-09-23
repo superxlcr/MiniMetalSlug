@@ -94,4 +94,9 @@ public class Man extends Monster {
             return false;
         return true;
     }
+
+    @Override
+    public void dieMusic() {
+        ResourceManager.SoundPoolPlay(ResourceManager.OH, 1);
+    }
 }

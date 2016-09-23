@@ -229,4 +229,9 @@ public abstract class Monster {
     public void drawMonsterRect(Canvas canvas) {
         Graphics.drawRectengle(canvas, startX, startY, endX, endY, 0x00ff00, 5);
     }
+
+    /**
+     * 播放怪物死亡音效
+     */
+    public abstract void dieMusic();
 }

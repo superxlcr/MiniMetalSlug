@@ -17,7 +17,7 @@ public class StageInit extends Stage {
         // 资源初始化
         ResourceManager.loadResource();
         // TODO 玩家初始化
-        Player.player = new Player("test", Player.MAX_HP);
+        Player.player = new Player("no name boy", Player.MAX_HP);
         // 下一场景为登录
         stageList.add(new StageLogin());
     }

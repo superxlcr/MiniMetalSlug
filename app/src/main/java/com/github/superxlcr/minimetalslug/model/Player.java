@@ -1,5 +1,6 @@
 package com.github.superxlcr.minimetalslug.model;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -49,6 +50,8 @@ public class Player {
     public static final int ACTION_RUN_LEFT = 4;
     public static final int ACTION_JUMP_RIGHT = 5;
     public static final int ACTION_JUMP_LEFT = 6;
+    public static final int ACTION_DOWN_RIGHT = 7;
+    public static final int ACTION_DOWN_LEFT = 8;
 
     // 角色方向
     public static final int DIR_RIGHT = 1;
@@ -66,6 +69,8 @@ public class Player {
     private String name;
     // 角色生命值
     private int hp;
+    // 角色分数
+    private int point;
     // 角色发射的子弹类型
     private Class<? extends Bullet> gun;
     // 角色当前动作
@@ -94,6 +99,9 @@ public class Player {
     public boolean isJumpMax = false;
     // 最高处滞留计数器
     public int jumpStopCount = 0;
+
+    // 是否处于下蹲状态
+    public boolean isDown = false;
 
     // 腿部绘制帧数计数
     private int legIndex = 0;
@@ -141,11 +149,31 @@ public class Player {
     }
 
     /**
+     * 执行下蹲动作
+     */
+    public void dowm() {
+        // 不处于跳跃与下蹲状态
+        if (!isDown && !isJump) {
+            isDown = true;
+        }
+    }
+
+    /**
+     * 执行起身动作
+     */
+    public void up() {
+        // 处于下蹲状态
+        if (isDown) {
+            isDown = false;
+        }
+    }
+
+    /**
      * 执行跳跃方法
      */
     public void jump() {
-        // 不处于跳跃状态
-        if (!isJump)
+        // 不处于跳跃与下蹲状态
+        if (!isJump && !isDown)
             isJump = true;
     }
 
@@ -217,13 +245,21 @@ public class Player {
             case ACTION_JUMP_LEFT:
                 drawAni(canvas, legJumpImage, headJumpImage, DIR_LEFT);
                 break;
+            case ACTION_DOWN_RIGHT:
+                drawAni(canvas, legStandImage, headStandImage, DIR_RIGHT);
+                break;
+            case ACTION_DOWN_LEFT:
+                drawAni(canvas, legStandImage, headStandImage, DIR_LEFT);
             default:
                 break;
         }
     }
 
     public void setMove(int move) {
-        this.move = move;
+        if (isDown) // 下蹲禁止移动
+            this.move = MOVE_STAND;
+        else
+            this.move = move;
     }
 
     /**
@@ -277,11 +313,15 @@ public class Player {
         Graphics.drawBorderString(canvas, 0x066a14, 0x91ff1d, "HP: " + hp,
                                   head.getWidth(),
                                   (int) ResourceManager.scale * 100, 3, paint);
+        // 分数
+        Graphics.drawBorderString(canvas, 0xa33e11, 0xffde00, "Point: " + point,
+                                  head.getWidth(),
+                                  (int) ResourceManager.scale * 150, 3, paint);
         if (MainActivity.DEBUG) // 显示测试怪物数
             Graphics.drawBorderString(canvas, 0xa33e11, 0xffde00,
                                       "怪物数: " + MonsterManager.monsterList
-                                              .size(), head.getWidth(),
-                                      (int) ResourceManager.scale * 150, 3,
+                                              .size(), head.getWidth() + 700,
+                                      (int) ResourceManager.scale * 50, 3,
                                       paint);
     }
 
@@ -296,10 +336,10 @@ public class Player {
             // 更新角色位置
             x += dis;
             // 设置动作
-            if (!isJump)
-                action = ACTION_RUN_RIGHT;
-            else
+            if (isJump) // 向右跳跃移动
                 action = ACTION_JUMP_RIGHT;
+            else // 向右移动
+                action = ACTION_RUN_RIGHT;
         } else if (move == MOVE_LEFT) {
             dis = (int) -(6 * ResourceManager.scale);
             // 更新怪物位置
@@ -308,16 +348,21 @@ public class Player {
             x += dis;
             if (x + dis < Player.X_DEFAULT)
                 dis = Player.X_DEFAULT - x;
-            if (!isJump)
-                action = ACTION_RUN_LEFT;
-            else
+            if (isJump) // 向左跳跃移动
                 action = ACTION_JUMP_LEFT;
-        } else if (!isJump) // 不动的时候，初始化动作
-            action = getDir() == DIR_LEFT ? ACTION_STAND_LEFT :
-                    ACTION_STAND_RIGHT;
-        else // 跳跃状态
+            else // 向左移动
+                action = ACTION_RUN_LEFT;
+        }
+        // 接下来为 STAND 站立状态
+        else if (isJump) // 跳跃状态
             action =
                     getDir() == DIR_LEFT ? ACTION_JUMP_LEFT : ACTION_JUMP_RIGHT;
+        else if (isDown) // 下蹲状态
+            action =
+                    getDir() == DIR_LEFT ? ACTION_DOWN_LEFT : ACTION_DOWN_RIGHT;
+        else // 不动的时候，初始化动作
+            action = getDir() == DIR_LEFT ? ACTION_STAND_LEFT :
+                    ACTION_STAND_RIGHT;
     }
 
     // 绘制角色的动画帧
@@ -347,6 +392,8 @@ public class Player {
 
         int drawX = X_DEFAULT - currentLegBitmap.getWidth() / 2;
         int drawY = y - currentLegBitmap.getHeight();
+        if (isDown) // 下蹲微调
+            drawY += 40;
         Graphics.drawMatrixImage(canvas, currentLegBitmap, 0, 0,
                                  currentLegBitmap.getWidth(),
                                  currentLegBitmap.getHeight(), trans, drawX,
@@ -395,6 +442,16 @@ public class Player {
                     drawY = drawY - currentHeadBitmap
                             .getHeight() + (int) (10 * ResourceManager.scale);
                     break;
+                case ACTION_DOWN_RIGHT:
+                    drawX += (int) (10 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (55 * ResourceManager.scale);
+                    break;
+                case ACTION_DOWN_LEFT:
+                    drawX -= (int) (15 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (55 * ResourceManager.scale);
+                    break;
             }
         } else { // 射击状态
             switch (action) {
@@ -427,6 +484,16 @@ public class Player {
                     drawX -= (int) (18 * ResourceManager.scale);
                     drawY = drawY - currentHeadBitmap
                             .getHeight() + (int) (15 * ResourceManager.scale);
+                    break;
+                case ACTION_DOWN_RIGHT:
+                    drawX += (int) (28 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (40 * ResourceManager.scale);
+                    break;
+                case ACTION_DOWN_LEFT:
+                    drawX -= (int) (18 * ResourceManager.scale);
+                    drawY = drawY - currentHeadBitmap
+                            .getHeight() + (int) (40 * ResourceManager.scale);
                     break;
             }
         }
@@ -633,7 +700,29 @@ public class Player {
         return hp;
     }
 
+    public void setPoint(int point) {
+        this.point = point;
+    }
+
+    public void addPoint(int point) {
+        this.point += point;
+    }
+
+    public int getPoint() {
+        return point;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public void damagePlayer(int damage) {
+        // 伤害时振动提醒
+        ResourceManager.Shake(200);
         hp -= damage;
     }
 
@@ -663,9 +752,26 @@ public class Player {
         if (top <= bullet.getBottom() && bottom >= bullet
                 .getBottom() || top <= bullet.getTop() && bottom >= bullet
                 .getBottom()) {
-            if (right >= bullet.getLeft() + 30)
+            if (right >= bullet.getLeft() + 30) {
                 return true;
+            }
         }
         return false;
+    }
+
+    /**
+     * 动作初始化
+     */
+    public void initAction() {
+        // 停止下蹲
+        isDown = false;
+        // 停止跳跃
+        isJump = false;
+        // y轴位置初始化
+        y = Y_DEFAULT;
+        // 位移初始化
+        move = MOVE_STAND;
+        // 动作初始化
+        action = ACTION_STAND_RIGHT;
     }
 }

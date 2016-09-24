@@ -62,6 +62,7 @@ public class StageGame extends Stage {
             });
             // 右移按钮
             Button rightButton = new Button(mainContext);
+            rightButton.setId(View.generateViewId());
             rightButton.setBackgroundResource(R.mipmap.right);
             // 添加按钮
             params = new RelativeLayout.LayoutParams(
@@ -82,6 +83,35 @@ public class StageGame extends Stage {
                             break;
                         case MotionEvent.ACTION_UP: // 松开
                             Player.player.setMove(Player.MOVE_STAND);
+                            break;
+                        default:
+                            break;
+                    }
+                    return false;
+                }
+            });
+            // 下蹲按钮
+            Button downButton = new Button(mainContext);
+            downButton.setBackgroundResource(R.mipmap.dowm);
+            // 添加按钮
+            params = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+            params.addRule(RelativeLayout.RIGHT_OF, rightButton.getId());
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            params.setMargins((int) ResourceManager.scale * 20, 0, 0,
+                              (int) ResourceManager.scale * 10);
+            gameLayout.addView(downButton, params);
+            // 事件监听器
+            downButton.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN: // 按下时下蹲
+                            Player.player.dowm();
+                            break;
+                        case MotionEvent.ACTION_UP: // 松开时起身
+                            Player.player.up();
                             break;
                         default:
                             break;
@@ -112,6 +142,7 @@ public class StageGame extends Stage {
             });
             // 跳跃按钮
             Button jumpButton = new Button(mainContext);
+            jumpButton.setId(View.generateViewId());
             jumpButton.setBackgroundResource(R.mipmap.jump);
             // 添加按钮
             params = new RelativeLayout.LayoutParams(
@@ -140,7 +171,7 @@ public class StageGame extends Stage {
                     RelativeLayout.LayoutParams.WRAP_CONTENT);
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            params.setMargins(0, 0, (int) ResourceManager.scale * 10,
+            params.setMargins(0, 0, (int) ResourceManager.scale * 20,
                               (int) ResourceManager.scale * 10);
             gameLayout.addView(settingsButton, params);
             // 事件监听器

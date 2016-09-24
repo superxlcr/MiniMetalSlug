@@ -131,4 +131,9 @@ public class Plane extends Monster {
     public void dieMusic() {
         ResourceManager.SoundPoolPlay(ResourceManager.BOMB, 0.1f);
     }
+
+    @Override
+    public int getPoint() {
+        return 20;
+    }
 }

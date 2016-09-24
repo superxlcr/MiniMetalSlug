@@ -96,4 +96,16 @@ public class Bomb extends Monster {
     public void dieMusic() {
         ResourceManager.SoundPoolPlay(ResourceManager.BOMB, 0.1f);
     }
+
+    // 我是炸弹你打不中我！
+    @Override
+    public boolean hitByBullet() {
+        return false;
+    }
+
+    // 踩炸弹加什么分……
+    @Override
+    public int getPoint() {
+        return -10;
+    }
 }

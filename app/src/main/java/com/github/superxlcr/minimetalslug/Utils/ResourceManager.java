@@ -1,11 +1,13 @@
 package com.github.superxlcr.minimetalslug.Utils;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Vibrator;
 
 import com.github.superxlcr.minimetalslug.GameView;
 import com.github.superxlcr.minimetalslug.MainActivity;
@@ -20,9 +22,13 @@ import java.util.HashMap;
  * Created by superxlcr on 2016/5/10.
  */
 public class ResourceManager {
+
+    private static Context mContext = null;
+
     // 音效管理
-    public static SoundPool soundPool;
-    public static HashMap<Integer, Integer> soundMap = new HashMap<>();
+    private static SoundPool soundPool;
+    private static HashMap<Integer, Integer> soundMap = new HashMap<>();
+    private static Vibrator vibrator = null;
     // 地图图片
     public static Bitmap map = null;
 
@@ -44,15 +50,9 @@ public class ResourceManager {
         SCREEN_HEIGHT = MainActivity.windowHeight;
         // 音效相关初始化
         soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-        soundMap.put(BOMB, soundPool
-                .load(MainActivity.context.getApplicationContext(), R.raw.bomb,
-                      1));
-        soundMap.put(OH, soundPool
-                .load(MainActivity.context.getApplicationContext(), R.raw.oh,
-                      1));
-        soundMap.put(SHOT, soundPool
-                .load(MainActivity.context.getApplicationContext(), R.raw.shot,
-                      1));
+        soundMap.put(BOMB, soundPool.load(getmContext(), R.raw.bomb, 1));
+        soundMap.put(OH, soundPool.load(getmContext(), R.raw.oh, 1));
+        soundMap.put(SHOT, soundPool.load(getmContext(), R.raw.shot, 1));
         // 解析地图，确定缩放大小
         Bitmap temp = BitmapFactory
                 .decodeResource(MainActivity.resources, R.mipmap.map);
@@ -121,10 +121,29 @@ public class ResourceManager {
 
     /**
      * 播放音效
+     *
      * @param index
      */
     public static void SoundPoolPlay(int index, float volume) {
         int value = soundMap.get(index);
         soundPool.play(value, volume, volume, 1, 0, 1);
+    }
+
+    /**
+     * 执行手机振动
+     *
+     * @param time 振动时间
+     */
+    public static void Shake(long time) {
+        if (vibrator == null)
+            vibrator = (Vibrator) getmContext()
+                    .getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(time);
+    }
+
+    private static Context getmContext() {
+        if (mContext == null)
+            mContext = MainActivity.context.getApplicationContext();
+        return mContext;
     }
 }

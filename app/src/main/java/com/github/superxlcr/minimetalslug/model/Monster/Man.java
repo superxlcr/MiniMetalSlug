@@ -99,4 +99,9 @@ public class Man extends Monster {
     public void dieMusic() {
         ResourceManager.SoundPoolPlay(ResourceManager.OH, 1);
     }
+
+    @Override
+    public int getPoint() {
+        return 10;
+    }
 }

@@ -222,6 +222,13 @@ public abstract class Monster {
     public boolean hitByPlayer() { return false; }
 
     /**
+     * 撞到子弹
+     *
+     * @return 是否从列表移除该怪物
+     */
+    public boolean hitByBullet() { return true; }
+
+    /**
      * 绘制怪物判断框
      *
      * @param canvas 画布
@@ -234,4 +241,10 @@ public abstract class Monster {
      * 播放怪物死亡音效
      */
     public abstract void dieMusic();
+
+    /**
+     * 获取怪物死亡分数
+     * @return 分数
+     */
+    public abstract int getPoint();
 }

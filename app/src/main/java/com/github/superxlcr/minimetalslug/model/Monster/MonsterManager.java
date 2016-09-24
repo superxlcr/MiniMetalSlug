@@ -98,13 +98,15 @@ public class MonsterManager {
         for (Monster monster : monsterList) {
             if (monster
                     .isHit(bullet.getLeft(), bullet.getTop(), bullet.getRight(),
-                           bullet.getBottom())) {
-                // 怪物被击中
+                           bullet.getBottom()) && monster.hitByBullet()) {
+                // 怪物被击中且有效
                 monsterList.remove(monster);
                 dieMonsterList.add(monster);
                 monster.setIsDie(true);
                 // dieMusic
                 monster.dieMusic();
+                // add point
+                Player.player.addPoint(monster.getPoint());
                 return true;
             }
         }
@@ -151,6 +153,8 @@ public class MonsterManager {
                     monster.setIsDie(true);
                     // dieMusic
                     monster.dieMusic();
+                    // add point
+                    Player.player.addPoint(monster.getPoint());
                     return;
                 }
             }
